@@ -18,25 +18,25 @@ fn main() {
 	}
 	for x in 120..175 {
 		for y in 25..29 {
-			let pixel = imgbuf1.get_pixel(x-2-100, y);
+			let pixel = imgbuf1.get_pixel(x+2-100, y);
 			finalimg.put_pixel(x, y, *pixel);
 		}
 	}
 	for x in 120..175 {
 		for y in 175..179 {
-			let pixel = imgbuf1.get_pixel(x-2-100, y);
+			let pixel = imgbuf1.get_pixel(x+2-100, y);
 			finalimg.put_pixel(x, y, *pixel);
 		}
 	}
 	for x in 120..124 {
 		for y in 29..175 {
-			let pixel = imgbuf1.get_pixel(x-2-100, y);
+			let pixel = imgbuf1.get_pixel(x+2-100, y);
 			finalimg.put_pixel(x, y, *pixel);
 		}
 	}
 	for x in 171..175 {
 		for y in 29..175 {
-			let pixel = imgbuf1.get_pixel(x-2-100, y);
+			let pixel = imgbuf1.get_pixel(x+2-100, y);
 			finalimg.put_pixel(x, y, *pixel);
 		}
 	}
