@@ -21,12 +21,12 @@ fn main() {
 	for stripe in 1..8 {
 		for x in 0..80 {
 			for y in 0..640 {
-				let mut pixel = finalimg.get_pixel(x+(80*(stripe-1)), y);
-				if y > 80 && y < 560 && (x+(80*(stripe-1)) < 480)
+				let mut pixel = finalimg.get_pixel(x, y);
+				if y > 80 && y < 560 && (x+(80*(stripe-1)) < 480) && (stripe == 1 || stripe == 2 || stripe == 3)
 				{
 					let inputpixel = input.get_pixel(x+(80*(stripe-1)), y-80);
 					if inputpixel == image::Rgba([0, 0, 0, 255]) {
-						pixel = finalimg.get_pixel(x+4+(80*(stripe-1)), y);
+						pixel = finalimg.get_pixel(x+2+(80*(stripe-1)), y);
 						// pixel = &image::Rgb([255, 255, 255]);
 					}
 				}
@@ -40,6 +40,13 @@ fn main() {
 	// 	}
 	// }
 
+	/*
+	for stripe{
+		for x y in stripe
+		pixel = stripe-1
+		if ref.pixel(x -80, y-80)
+			then shift
+			} */
 	// imgbuf.save("first_test.png").unwrap();
 	// image::save_buffer("image.png", &imgbuf1, 80, 200, image::ExtendedColorType::Rgb8).unwrap();
 	image::save_buffer("image2.png", &finalimg, 640, 640, image::ExtendedColorType::Rgb8).unwrap()
