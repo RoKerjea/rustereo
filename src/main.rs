@@ -21,16 +21,40 @@ fn main() {
 	for stripe in 1..8 {
 		for x in 0..80 {
 			for y in 0..640 {
-				let mut pixel = finalimg.get_pixel(x, y);
-				if y > 80 && y < 560 && (x+(80*(stripe-1)) < 480) && (stripe == 1 || stripe == 2 || stripe == 3)
+				let pixel = finalimg.get_pixel(x, y);
+				// if y > 80 && y < 560 && (x+(80*(stripe-1)) < 480) && (stripe == 1 || stripe == 2 || stripe == 3)
+				// {
+				// 	let inputpixel = input.get_pixel(x+(80*(stripe-1)), y-80);
+				// 	if inputpixel == image::Rgba([0, 0, 0, 255]) {
+				// 		pixel = finalimg.get_pixel(x+2+(80*(stripe-1)), y);
+				// 		// pixel = &image::Rgb([255, 255, 255]);
+				// 	}
+				// }
+				finalimg.put_pixel(x+(80*stripe), y, *pixel);
+			}
+		}
+	}
+
+	image::save_buffer("image_pre-shift.png", &finalimg, 640, 640, image::ExtendedColorType::Rgb8).unwrap();
+	for stripe in 1..8 {
+		for x in 0..80 {
+			for y in 0..640 {
+				// let mut pixel = finalimg.get_pixel(x, y);
+				if y > 80 && y < 560 && (x+(80*(stripe-1)) < 480) 
 				{
 					let inputpixel = input.get_pixel(x+(80*(stripe-1)), y-80);
 					if inputpixel == image::Rgba([0, 0, 0, 255]) {
-						pixel = finalimg.get_pixel(x+2+(80*(stripe-1)), y);
+						let &pixel = finalimg.get_pixel(x+2+(80*(stripe-1)), y);
+						let &pixel2 = finalimg.get_pixel(x+(80*(stripe-1)), y);
+						for i in stripe..8 {
+							finalimg.put_pixel(x+(80*i), y, pixel);
+						}
+						// finalimg.put_pixel(x+(80*(stripe+1)), y, pixel);
+						// finalimg.put_pixel(x+(80*(stripe+2)), y, pixel);
+						finalimg.put_pixel(x+(80*stripe), y, pixel);
 						// pixel = &image::Rgb([255, 255, 255]);
 					}
 				}
-				finalimg.put_pixel(x+(80*stripe), y, *pixel);
 			}
 		}
 	}
@@ -49,5 +73,5 @@ fn main() {
 			} */
 	// imgbuf.save("first_test.png").unwrap();
 	// image::save_buffer("image.png", &imgbuf1, 80, 200, image::ExtendedColorType::Rgb8).unwrap();
-	image::save_buffer("image2.png", &finalimg, 640, 640, image::ExtendedColorType::Rgb8).unwrap()
+	image::save_buffer("image2.png", &finalimg, 640, 640, image::ExtendedColorType::Rgb8).unwrap();
 }
