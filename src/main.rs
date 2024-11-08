@@ -12,7 +12,7 @@ fn main() {
 		let ratio = ((0.25 * _y as f32) *0.75) as u8;
 		let ratio2 = _y as f32 / (640.0 / 2.0);
 		match color {
-			0 => *pixel = image::Rgb([0, 0, (80.0 * ratio2) as u8]),
+			0 => *pixel = image::Rgb([0, 0, 200-ratio]),
 			1 => *pixel = image::Rgb([255 - ratio, 165 - ratio, 0]),
 			2 => *pixel = image::Rgb([255 - ratio, 165 - ratio, 0]),
 			_ => *pixel = image::Rgb([0, 0, 0]),
@@ -52,7 +52,7 @@ fn main() {
 				{
 					let inputpixel = input.get_pixel(x+(80*(stripe-1)), y-80);
 					if inputpixel == image::Rgba([0, 0, 0, 255]) {
-						let mut shift = 6;
+						let mut shift = 4;
 						// if stripe > 4 {
 						// 	shift = 3;
 						// }
