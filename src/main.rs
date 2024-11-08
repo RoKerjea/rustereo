@@ -1,6 +1,6 @@
 use image::{GenericImageView, Pixel};
 use rand::Rng;
-
+/*
 fn main() {
 	let imgx = 80;
 	let imgy = 640;
@@ -86,4 +86,48 @@ fn main() {
 	// imgbuf.save("first_test.png").unwrap();
 	// image::save_buffer("image.png", &imgbuf1, 80, 200, image::ExtendedColorType::Rgb8).unwrap();
 	image::save_buffer("image2.png", &finalimg, 640, 640, image::ExtendedColorType::Rgb8).unwrap();
+}
+*/
+
+fn draw_rectangle(canvas: &mut image::ImageBuffer<image::Rgb<u8>, Vec<u8>>, x: u32, y: u32, r: u32, color: image::Rgb<u8>) {
+	for i in x-r..x+r {
+		for j in y-r..y+r {
+				canvas.put_pixel(i, j, color);
+		}
+	}
+	let black = image::Rgb([0, 0, 0]);
+	for i in x-r..=x+r {
+		canvas.put_pixel(i, y-r, black);
+		canvas.put_pixel(i, y+r, black);
+	}
+	for j in y-r..y+r {
+		canvas.put_pixel(x-r, j, black);
+		canvas.put_pixel(x+r, j, black);
+	}
+}
+
+fn draw_circle(canvas: &mut image::ImageBuffer<image::Rgb<u8>, Vec<u8>>, x: u32, y: u32, r: u32, color: image::Rgb<u8>) {
+	let xref = x as i32;
+	let yref = y as i32;
+	let r = r as i32;
+	let black = image::Rgb([0, 0, 0]);
+	for i in xref-r..xref+r {
+		for j in yref-r..yref+r {
+			//i go from 270 to 370
+			if (i-xref)*(i-xref) + (j-yref)*(j-yref) <= r*r {
+				canvas.put_pixel(i as u32, j as u32, color);
+				
+			}
+		}
+	}
+}
+
+fn main() {
+	let pixel = image::Rgb([255, 255, 255]);
+	let mut canvas = image::ImageBuffer::from_pixel(640, 640, pixel);// can be used to genrate a new canvas with a single color
+	let color = image::Rgb([255, 0, 0]);
+	let blue = image::Rgb([0, 0, 255]);
+	draw_rectangle(&mut canvas, 320, 320, 100, color);
+	draw_circle(&mut canvas, 320, 320, 50, blue);
+	image::save_buffer("video1.png", &canvas, 640, 640, image::ExtendedColorType::Rgb8).unwrap();
 }
