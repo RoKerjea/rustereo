@@ -229,12 +229,24 @@ where
 // 	canvas.0.save("video1.png").unwrap();
 // }
 
+
+
 fn random_color() -> image::Rgba<u8> {
+	let color1 = image::Rgba([96, 108, 56, 255]);
+	let color2 = image::Rgba([40, 54, 24, 255]);
+	let color3 = image::Rgba([254, 250, 224, 255]);
+	let color4 = image::Rgba([221, 161, 94, 255]);
+	let color5 = image::Rgba([188, 108, 37, 255]);
 	let mut rng = rand::thread_rng();
-	let r = rng.gen_range(0..=255);
-	let g = rng.gen_range(0..=255);
-	let b = rng.gen_range(0..=255);
-	image::Rgba([r, g, b, 255])
+	let color = rng.gen_range(0..=4);
+	match color {
+		0 => color1,
+		1 => color2,
+		2 => color3,
+		3 => color4,
+		4 => color5,
+		_ => color1,
+	}
 }
 
 fn main()
@@ -243,12 +255,14 @@ fn main()
 	let ymax = 640;
 
 	let white = image::Rgba([255, 255, 255, 255]);
+	let black = image::Rgba([0, 0, 0, 255]);
 	let mut canvas = RgbaImage::from_pixel(640, 640, white);
 	let rng = rand::thread_rng();
 	for j in 0..ymax/10 {
 		for i in 0..xmax/80 {
 			let color = random_color();
 			drawing::draw_filled_rect_mut(&mut canvas, Rect::at(10*i, 10*j).of_size(10, 10), color);
+			// drawing::draw_hollow_rect_mut(&mut canvas, Rect::at(10*i, 10*j).of_size(10, 10), black);
 			let color = random_color();
 			// drawing::draw_filled_circle_mut(&mut canvas, (10*i+5, 10*j+5), 4, color);
 			// i need a slice of 3 points
