@@ -257,33 +257,50 @@ fn main()
 	let white = image::Rgba([255, 255, 255, 255]);
 	let black = image::Rgba([0, 0, 0, 255]);
 	let mut canvas = RgbaImage::from_pixel(640, 640, white);
-	let rng = rand::thread_rng();
-	for j in 0..ymax/10 {
-		for i in 0..xmax/80 {
-			let color = random_color();
-			drawing::draw_filled_rect_mut(&mut canvas, Rect::at(10*i, 10*j).of_size(10, 10), color);
-			// drawing::draw_hollow_rect_mut(&mut canvas, Rect::at(10*i, 10*j).of_size(10, 10), black);
-			let color = random_color();
-			// drawing::draw_filled_circle_mut(&mut canvas, (10*i+5, 10*j+5), 4, color);
-			// i need a slice of 3 points
-			let points = [
-				Point::new(10*i+2, 10*j+2),
-				Point::new(10*i+8, 10*j+5),
-				Point::new(10*i+2, 10*j+8),
-			];
-			// let mut blend = color.clone();
-			// blend.blend(&color);
-			// let blend = Blend::Alpha(color);
-			drawing::draw_antialiased_polygon_mut(&mut canvas, &points, color, interpolate);
-			let points_float = [
-				Point::new(10.0*i as f32+2.0, 10.0*j as f32+2.0),
-				Point::new(10.0*i as f32+8.0, 10.0*j as f32+5.0),
-				Point::new(10.0*i as f32+2.0, 10.0*j as f32+8.0),
-			];
-			drawing::draw_hollow_polygon_mut(&mut canvas, &points_float, image::Rgba([0, 0, 0, 255]));
+	let mut rng = rand::thread_rng();
+	for _ in 0..500 {
+		//need a random 
+		let x:i32 = rng.gen_range(0..80);
+		let y:i32 = rng.gen_range(0..ymax);
+		let color = random_color();
+		drawing::draw_filled_circle_mut(&mut canvas, (x, y),10, color);
+		drawing::draw_hollow_circle_mut(&mut canvas, (x, y),10,  black);
+		if x<10 {
+			drawing::draw_filled_circle_mut(&mut canvas, (x+80, y),10, color);
+			drawing::draw_hollow_circle_mut(&mut canvas, (x+80, y),10,  black);
 		}
+		if x>70 {
+			drawing::draw_filled_circle_mut(&mut canvas, (x-80, y),10, color);
+			drawing::draw_hollow_circle_mut(&mut canvas, (x-80, y),10,  black);
+		}
+	// 		// i need a slice of 3 points
 	}
-	//copy stripes from first generated image
+	// for j in 0..ymax/10 {
+	// 	for i in 0..xmax/80 {
+	// 		let color = random_color();
+	// 		drawing::draw_filled_rect_mut(&mut canvas, Rect::at(10*i, 10*j).of_size(10, 10), color);
+	// 		// drawing::draw_hollow_rect_mut(&mut canvas, Rect::at(10*i, 10*j).of_size(10, 10), black);
+	// 		let color = random_color();
+	// 		// drawing::draw_filled_circle_mut(&mut canvas, (10*i+5, 10*j+5), 4, color);
+	// 		// i need a slice of 3 points
+	// 		let points = [
+	// 			Point::new(10*i+2, 10*j+2),
+	// 			Point::new(10*i+8, 10*j+5),
+	// 			Point::new(10*i+2, 10*j+8),
+	// 		];
+	// 		// let mut blend = color.clone();
+	// 		// blend.blend(&color);
+	// 		// let blend = Blend::Alpha(color);
+	// 		drawing::draw_antialiased_polygon_mut(&mut canvas, &points, color, interpolate);
+	// 		let points_float = [
+	// 			Point::new(10.0*i as f32+2.0, 10.0*j as f32+2.0),
+	// 			Point::new(10.0*i as f32+8.0, 10.0*j as f32+5.0),
+	// 			Point::new(10.0*i as f32+2.0, 10.0*j as f32+8.0),
+	// 		];
+	// 		drawing::draw_hollow_polygon_mut(&mut canvas, &points_float, image::Rgba([0, 0, 0, 255]));
+	// 	}
+	// }
+	// copy stripes from first generated image
 	for stripe in 1..8 {
 		for x in 0..80 {
 			for y in 0..640 {
@@ -292,7 +309,7 @@ fn main()
 			}
 		}
 	}
-	//apply pixel shift to generate final image
+	// //apply pixel shift to generate final image
 
 	let input = image::open("42_Logo.svg.png").unwrap();
 	for stripe in 1..8 {
@@ -313,5 +330,5 @@ fn main()
 			}
 		}
 	}
-	image::save_buffer("square_triangle_border.png", &canvas, 640, 640, image::ExtendedColorType::Rgba8).unwrap();
+	image::save_buffer("random_circles.png", &canvas, 640, 640, image::ExtendedColorType::Rgba8).unwrap();
 }
