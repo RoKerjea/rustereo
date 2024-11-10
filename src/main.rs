@@ -1,6 +1,6 @@
 use image::{Pixel, RgbaImage, imageops};
 use rand::Rng;
-use imageproc::{drawing::{self, draw_line_segment_mut, Blend, Canvas}, rect::Rect};
+use imageproc::{drawing::{self, draw_line_segment_mut, Blend, Canvas}, pixelops::interpolate, point::Point, rect::Rect};
 /*
 fn main() {
 	let imgx = 80;
@@ -239,18 +239,34 @@ fn random_color() -> image::Rgba<u8> {
 
 fn main()
 {
-	let x = 80;
-	let y = 640;
+	let xmax = 640;
+	let ymax = 640;
 
 	let white = image::Rgba([255, 255, 255, 255]);
 	let mut canvas = RgbaImage::from_pixel(640, 640, white);
 	let rng = rand::thread_rng();
-	for j in 0..64 {
-		for i in 0..8 {
+	for j in 0..ymax/10 {
+		for i in 0..xmax/80 {
 			let color = random_color();
 			drawing::draw_filled_rect_mut(&mut canvas, Rect::at(10*i, 10*j).of_size(10, 10), color);
 			let color = random_color();
-			drawing::draw_filled_circle_mut(&mut canvas, (10*i+5, 10*j+5), 4, color);
+			// drawing::draw_filled_circle_mut(&mut canvas, (10*i+5, 10*j+5), 4, color);
+			// i need a slice of 3 points
+			let points = [
+				Point::new(10*i+2, 10*j+2),
+				Point::new(10*i+8, 10*j+5),
+				Point::new(10*i+2, 10*j+8),
+			];
+			// let mut blend = color.clone();
+			// blend.blend(&color);
+			// let blend = Blend::Alpha(color);
+			drawing::draw_antialiased_polygon_mut(&mut canvas, &points, color, interpolate);
+			let points_float = [
+				Point::new(10.0*i as f32+2.0, 10.0*j as f32+2.0),
+				Point::new(10.0*i as f32+8.0, 10.0*j as f32+5.0),
+				Point::new(10.0*i as f32+2.0, 10.0*j as f32+8.0),
+			];
+			drawing::draw_hollow_polygon_mut(&mut canvas, &points_float, image::Rgba([0, 0, 0, 255]));
 		}
 	}
 	//copy stripes from first generated image
@@ -268,28 +284,20 @@ fn main()
 	for stripe in 1..8 {
 		for x in 0..80 {
 			for y in 0..640 {
-				// let mut pixel = finalimg.get_pixel(x, y);
 				if y > 80 && y < 560 && (x+(80*(stripe-1)) < 480) 
 				{
 					let inputpixel = input.get_pixel(x+(80*(stripe-1)), y-80);
 					if inputpixel == image::Rgba([0, 0, 0, 255]) {
-						let mut shift = 4;
-						// if stripe > 4 {
-						// 	shift = 3;
-						// }
+						let shift = 4;
 						let &pixel = canvas.get_pixel(x+shift+(80*(stripe-1)), y);
-						// let &pixel2 = finalimg.get_pixel(x+(80*(stripe-1)), y);
 						for i in stripe..8 {
 							canvas.put_pixel(x+(80*i), y, pixel);
 						}
-						// finalimg.put_pixel(x+(80*(stripe+1)), y, pixel);
-						// finalimg.put_pixel(x+(80*(stripe+2)), y, pixel);
 						canvas.put_pixel(x+(80*stripe), y, pixel);
-						// pixel = &image::Rgb([255, 255, 255]);
 					}
 				}
 			}
 		}
 	}
-	image::save_buffer("video5.png", &canvas, 640, 640, image::ExtendedColorType::Rgba8).unwrap();
+	image::save_buffer("square_triangle_border.png", &canvas, 640, 640, image::ExtendedColorType::Rgba8).unwrap();
 }
