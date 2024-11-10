@@ -249,6 +249,19 @@ fn random_color() -> image::Rgba<u8> {
 	}
 }
 
+fn draw_bordered_circle(canvas: &mut image::ImageBuffer<image::Rgba<u8>, Vec<u8>>, x: i32, y: i32, r: u32, color: image::Rgba<u8>) {
+
+	let black = image::Rgba([0, 0, 0, 255]);
+	drawing::draw_filled_circle_mut(canvas, (x, y),10, color);
+	drawing::draw_hollow_circle_mut(canvas, (x, y),10, black);
+}
+
+fn draw_bordered_rect(canvas: &mut image::ImageBuffer<image::Rgba<u8>, Vec<u8>>, x: i32, y: i32, r: u32, color: image::Rgba<u8>) {
+	let black = image::Rgba([0, 0, 0, 255]);
+		drawing::draw_filled_rect_mut(canvas, Rect::at(x, y).of_size(r, r), color);
+		drawing::draw_hollow_rect_mut(canvas, Rect::at(x, y).of_size(r, r), black);
+}
+
 fn main()
 {
 	let xmax = 640;
@@ -259,21 +272,23 @@ fn main()
 	let mut canvas = RgbaImage::from_pixel(640, 640, white);
 	let mut rng = rand::thread_rng();
 	for _ in 0..500 {
-		//need a random 
 		let x:i32 = rng.gen_range(0..80);
 		let y:i32 = rng.gen_range(0..ymax);
 		let color = random_color();
-		drawing::draw_filled_circle_mut(&mut canvas, (x, y),10, color);
-		drawing::draw_hollow_circle_mut(&mut canvas, (x, y),10,  black);
-		if x<10 {
-			drawing::draw_filled_circle_mut(&mut canvas, (x+80, y),10, color);
-			drawing::draw_hollow_circle_mut(&mut canvas, (x+80, y),10,  black);
+		// draw_bordered_circle(&mut canvas, x, y, 10, color);
+		// if x<10 {
+		// 	draw_bordered_circle(&mut canvas, x+80, y, 10, color);
+		// }
+		// if x>70 {
+		// 	draw_bordered_circle(&mut canvas, x-80, y, 10, color);
+		// }
+		draw_bordered_rect(&mut canvas, x, y, 20, color);
+		// if x<10 {
+		// 	draw_bordered_rect(&mut canvas, x+80, y, 20, color);
+		// }
+		if x>60 {
+			draw_bordered_rect(&mut canvas, x-80, y, 20, color);
 		}
-		if x>70 {
-			drawing::draw_filled_circle_mut(&mut canvas, (x-80, y),10, color);
-			drawing::draw_hollow_circle_mut(&mut canvas, (x-80, y),10,  black);
-		}
-	// 		// i need a slice of 3 points
 	}
 	// for j in 0..ymax/10 {
 	// 	for i in 0..xmax/80 {
@@ -330,5 +345,5 @@ fn main()
 			}
 		}
 	}
-	image::save_buffer("random_circles.png", &canvas, 640, 640, image::ExtendedColorType::Rgba8).unwrap();
+	image::save_buffer("random_squares.png", &canvas, 640, 640, image::ExtendedColorType::Rgba8).unwrap();
 }
