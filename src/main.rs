@@ -261,7 +261,7 @@ fn draw_bordered_rect(canvas: &mut image::ImageBuffer<image::Rgba<u8>, Vec<u8>>,
 		drawing::draw_filled_rect_mut(canvas, Rect::at(x, y).of_size(r, r), color);
 		drawing::draw_hollow_rect_mut(canvas, Rect::at(x, y).of_size(r, r), black);
 }
-
+/*
 fn main()
 {
 	let xmax = 640;
@@ -346,4 +346,58 @@ fn main()
 		}
 	}
 	image::save_buffer("random_squares.png", &canvas, 640, 640, image::ExtendedColorType::Rgba8).unwrap();
+}*/
+fn random_color2() -> nannou::color::Rgba {
+	let color1 = nannou::color::Rgba::new(96.0 / 255.0, 108.0 / 255.0, 56.0 / 255.0, 1.0);
+	let color2 = nannou::color::Rgba::new(40.0 / 255.0, 54.0 / 255.0, 24.0 / 255.0, 1.0);
+	let color3 = nannou::color::Rgba::new(254.0 / 255.0, 250.0 / 255.0, 224.0 / 255.0, 1.0);
+	let color4 = nannou::color::Rgba::new(221.0 / 255.0, 161.0 / 255.0, 94.0 / 255.0, 1.0);
+	let color5 = nannou::color::Rgba::new(188.0 / 255.0, 108.0 / 255.0, 37.0 / 255.0, 1.0);
+	let mut rng = rand::thread_rng();
+	let color = rng.gen_range(0..=4);
+	match color {
+		0 => color1,
+		1 => color2,
+		2 => color3,
+		3 => color4,
+		4 => color5,
+		_ => color1,
+	}
+}
+use nannou::prelude::*;
+use nannou::LoopMode::Wait;
+
+fn main() {
+    nannou::sketch(view).run();
+}
+
+fn view(app: &App, frame: Frame) {
+    // get canvas to draw on
+	app.set_loop_mode(Wait);
+    let draw = app.draw();
+
+    // set background to blue
+    draw.background().color(PLUM);
+	// draw.ellipse().color(STEELBLUE);
+	for y in 0..80{
+		for x in 0..10{
+			let color1 = random_color2();
+			draw.rect()
+				.color(color1)
+				.w_h(10.0, 10.0)
+				.x_y(-50.0 + (x as f32*10.0), 400.0 - (y as f32 *10.0));
+			let mut color2 = random_color2();
+			while (color1 == color2){
+				color2 = random_color2();
+			}
+			draw.ellipse()
+				.color(color2)
+				.w_h(7.0,7.0)
+				.x_y(-50.0 + (x as f32*10.0), 400.0 - (y as f32 *10.0));
+		}
+	}
+	// draw.x(100.0);
+	let canvas2 = draw.x(300.0);
+    // put everything on the frame
+    canvas2.to_frame(app, &frame).unwrap();
 }
