@@ -382,18 +382,22 @@ fn view(app: &App, frame: Frame) {
 	for y in 0..80{
 		for x in 0..10{
 			let color1 = random_color2();
-			draw.rect()
-				.color(color1)
-				.w_h(10.0, 10.0)
-				.x_y(-50.0 + (x as f32*10.0), 400.0 - (y as f32 *10.0));
+			for stripe in 0..8 {
+				draw.rect()
+					.color(color1)
+					.w_h(10.0, 10.0)
+					.x_y(-450.0 + (100 * stripe)as f32 + (x as f32*10.0), 400.0 - (y as f32 *10.0));
+			}
 			let mut color2 = random_color2();
 			while (color1 == color2){
 				color2 = random_color2();
 			}
-			draw.ellipse()
-				.color(color2)
-				.w_h(7.0,7.0)
-				.x_y(-50.0 + (x as f32*10.0), 400.0 - (y as f32 *10.0));
+			for stripe in 0..8 {
+				draw.ellipse()
+					.color(color2)
+					.w_h(7.0,7.0)
+					.x_y(-450.0 + (100 * stripe)as f32 + (x as f32*10.0), 400.0 - (y as f32 *10.0));
+			}
 		}
 	}
 	// draw.x(100.0);
