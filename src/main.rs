@@ -365,6 +365,9 @@ fn random_color2() -> nannou::color::Rgba {
 	}
 }
 use nannou::prelude::*;
+use nannou::image::GenericImage;
+use nannou::image::GenericImageView;
+// use image::GenericImage;
 use nannou::LoopMode::Wait;
 use nannou::wgpu::TextureBuilder;
 // fn main() {
@@ -414,11 +417,32 @@ struct Model {
 
 fn model(app: &App) -> Model {
   // Create a new window!
-  app.new_window().size(640, 480).view(view).build().unwrap();
+  app.new_window().size(800, 600).view(view).build().unwrap();
   // Load the image from disk and upload it to a GPU texture.
 //   let assets = app.assets_path().unwrap();
-  let img_path = "/mnt/nfs/homes/rokerjea/rustereo/assets/images/image2.png";
-  let texture = wgpu::Texture::from_path(app, img_path).unwrap();
+//   let img_path = "/mnt/nfs/homes/rokerjea/rustereo/assets/images/image2.png";
+  let input = nannou::image::open("/mnt/nfs/homes/rokerjea/rustereo/assets/images/42_Logo.svg.png").unwrap();
+  let mut canvas = nannou::image::open("/mnt/nfs/homes/rokerjea/rustereo/assets/images/image2.png").unwrap();
+  for stripe in 1..8 {
+	for x in 0..80 {
+		for y in 0..640 {
+			// let mut pixel = finalimg.get_pixel(x, y);
+			if y > 80 && y < 560 && (x+(80*(stripe-1)) < 480) 
+			{
+				let inputpixel = input.get_pixel(x+(80*(stripe-1)), y-80);
+				if inputpixel == nannou::image::Rgba([0, 0, 0, 255]) {
+					let mut shift = 4;
+					let pixel = canvas.get_pixel(x+shift+(80*(stripe-1)), y);
+					for i in stripe..8 {
+						canvas.put_pixel(x+(80*i), y, pixel);
+					}
+					canvas.put_pixel(x+(80*stripe), y, pixel);
+				}
+			}
+		}
+	}
+}
+  let texture = wgpu::Texture::from_image(app, &canvas);
   Model { texture }
 }
 
