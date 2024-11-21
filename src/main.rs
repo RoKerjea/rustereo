@@ -366,42 +366,67 @@ fn random_color2() -> nannou::color::Rgba {
 }
 use nannou::prelude::*;
 use nannou::LoopMode::Wait;
+use nannou::wgpu::TextureBuilder;
+// fn main() {
+//     nannou::sketch(view).run();
+// }
+
+// fn view(app: &App, frame: Frame) {
+//     // get canvas to draw on
+// 	app.set_loop_mode(Wait);
+//     let draw = app.draw();
+
+//     // set background to blue
+//     draw.background().color(PLUM);
+// 	// draw.ellipse().color(STEELBLUE);
+// 	for y in 0..80{
+// 		for x in 0..10{
+// 			let color1 = random_color2();
+// 			for stripe in 0..8 {
+// 				draw.rect()
+// 					.color(color1)
+// 					.w_h(10.0, 10.0)
+// 					.x_y(-450.0 + (100 * stripe)as f32 + (x as f32*10.0), 400.0 - (y as f32 *10.0));
+// 			}
+// 			let mut color2 = random_color2();
+// 			while color1 == color2{
+// 				color2 = random_color2();
+// 			}
+// 			for stripe in 0..8 {
+// 				draw.ellipse()
+// 					.color(color2)
+// 					.w_h(7.0,7.0)
+// 					.x_y(-450.0 + (100 * stripe)as f32+ (x as f32*10.0), 400.0 - (y as f32 *10.0));
+// 			}
+// 		}
+// 	}
+//     // put everything on the frame
+//     draw.to_frame(app, &frame).unwrap();
+// }
+
 
 fn main() {
-    nannou::sketch(view).run();
+  nannou::app(model).run();
+}
+struct Model {
+	texture: wgpu::Texture,
 }
 
-fn view(app: &App, frame: Frame) {
-    // get canvas to draw on
-	app.set_loop_mode(Wait);
-    let draw = app.draw();
+fn model(app: &App) -> Model {
+  // Create a new window!
+  app.new_window().size(640, 480).view(view).build().unwrap();
+  // Load the image from disk and upload it to a GPU texture.
+//   let assets = app.assets_path().unwrap();
+  let img_path = "/mnt/nfs/homes/rokerjea/rustereo/assets/images/image2.png";
+  let texture = wgpu::Texture::from_path(app, img_path).unwrap();
+  Model { texture }
+}
 
-    // set background to blue
-    draw.background().color(PLUM);
-	// draw.ellipse().color(STEELBLUE);
-	for y in 0..80{
-		for x in 0..10{
-			let color1 = random_color2();
-			for stripe in 0..8 {
-				draw.rect()
-					.color(color1)
-					.w_h(10.0, 10.0)
-					.x_y(-450.0 + (100 * stripe)as f32 + (x as f32*10.0), 400.0 - (y as f32 *10.0));
-			}
-			let mut color2 = random_color2();
-			while (color1 == color2){
-				color2 = random_color2();
-			}
-			for stripe in 0..8 {
-				draw.ellipse()
-					.color(color2)
-					.w_h(7.0,7.0)
-					.x_y(-450.0 + (100 * stripe)as f32 + (x as f32*10.0), 400.0 - (y as f32 *10.0));
-			}
-		}
-	}
-	// draw.x(100.0);
-	let canvas2 = draw.x(300.0);
-    // put everything on the frame
-    canvas2.to_frame(app, &frame).unwrap();
+fn view(app: &App, model: &Model, frame: Frame) {
+	frame.clear(BLACK);
+
+	let draw = app.draw();
+	draw.texture(&model.texture);
+  
+	draw.to_frame(app, &frame).unwrap();
 }
