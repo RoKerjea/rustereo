@@ -417,17 +417,17 @@ struct Model {
 
 fn model(app: &App) -> Model {
   // Create a new window!
-  app.new_window().size(800, 600).view(view).build().unwrap();
+  app.new_window().size(800, 800).view(view).build().unwrap();
   // Load the image from disk and upload it to a GPU texture.
 //   let assets = app.assets_path().unwrap();
 //   let img_path = "/mnt/nfs/homes/rokerjea/rustereo/assets/images/image2.png";
   let input = nannou::image::open("/mnt/nfs/homes/rokerjea/rustereo/assets/images/42_Logo.svg.png").unwrap();
-  let mut canvas = nannou::image::open("/mnt/nfs/homes/rokerjea/rustereo/assets/images/image2.png").unwrap();
+  let mut canvas = nannou::image::open("/mnt/nfs/homes/rokerjea/rustereo/assets/images/image_pre-shift.png").unwrap();
   for stripe in 1..8 {
 	for x in 0..80 {
 		for y in 0..640 {
 			// let mut pixel = finalimg.get_pixel(x, y);
-			if y > 80 && y < 560 && (x+(80*(stripe-1)) < 480) 
+			if y > 80 && y < 560 && (x+(80*(stripe-1)) < 480)
 			{
 				let inputpixel = input.get_pixel(x+(80*(stripe-1)), y-80);
 				if inputpixel == nannou::image::Rgba([0, 0, 0, 255]) {
@@ -445,6 +445,38 @@ fn model(app: &App) -> Model {
   let texture = wgpu::Texture::from_image(app, &canvas);
   Model { texture }
 }
+/*
+fn update(app: &App, model: &mut Model, update: Update) {
+    let draw = app.draw();
+
+    // set background to blue
+    draw.background().color(PLUM);
+	// draw.ellipse().color(STEELBLUE);
+	for y in 0..80{
+		for x in 0..10{
+			let color1 = random_color2();
+			for stripe in 0..8 {
+				draw.rect()
+					.color(color1)
+					.w_h(10.0, 10.0)
+					.x_y(-450.0 + (100 * stripe)as f32 + (x as f32*10.0), 400.0 - (y as f32 *10.0));
+			}
+			let mut color2 = random_color2();
+			while color1 == color2{
+				color2 = random_color2();
+			}
+			for stripe in 0..8 {
+				draw.ellipse()
+					.color(color2)
+					.w_h(7.0,7.0)
+					.x_y(-450.0 + (100 * stripe)as f32+ (x as f32*10.0), 400.0 - (y as f32 *10.0));
+			}
+		}
+	}
+    // put everything on the frame
+    // draw.to_frame(app, &frame).unwrap();
+	// model.texture = wgpu::Texture::from_image(app, &canvas);
+}*/
 
 fn view(app: &App, model: &Model, frame: Frame) {
 	frame.clear(BLACK);
