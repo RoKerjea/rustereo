@@ -10,3 +10,10 @@ image = "0.25.5"
 rand = "0.8.5"
 imageproc = "0.25.0"
 nannou = "0.19"
+
+[profile.release]
+strip = true
+opt-level = "z"
+lto = true
+codegen-units = 1
+panic = "abort"
