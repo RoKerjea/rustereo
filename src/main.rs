@@ -365,49 +365,51 @@ fn random_color2() -> nannou::color::Rgba {
 	}
 }
 use nannou::prelude::*;
+use nannou::event::Key;
 use nannou::image::GenericImage;
 use nannou::image::GenericImageView;
 // use image::GenericImage;
 use nannou::LoopMode::Wait;
 use nannou::wgpu::TextureBuilder;
-// fn main() {
-//     nannou::sketch(view).run();
-// }
+/*
+fn main() {
+    nannou::sketch(view).run();
+}
 
-// fn view(app: &App, frame: Frame) {
-//     // get canvas to draw on
-// 	app.set_loop_mode(Wait);
-//     let draw = app.draw();
+fn view(app: &App, frame: Frame) {
+    // get canvas to draw on
+	app.set_loop_mode(Wait);
+    let draw = app.draw();
 
-//     // set background to blue
-//     draw.background().color(PLUM);
-// 	// draw.ellipse().color(STEELBLUE);
-// 	for y in 0..80{
-// 		for x in 0..10{
-// 			let color1 = random_color2();
-// 			for stripe in 0..8 {
-// 				draw.rect()
-// 					.color(color1)
-// 					.w_h(10.0, 10.0)
-// 					.x_y(-450.0 + (100 * stripe)as f32 + (x as f32*10.0), 400.0 - (y as f32 *10.0));
-// 			}
-// 			let mut color2 = random_color2();
-// 			while color1 == color2{
-// 				color2 = random_color2();
-// 			}
-// 			for stripe in 0..8 {
-// 				draw.ellipse()
-// 					.color(color2)
-// 					.w_h(7.0,7.0)
-// 					.x_y(-450.0 + (100 * stripe)as f32+ (x as f32*10.0), 400.0 - (y as f32 *10.0));
-// 			}
-// 		}
-// 	}
-//     // put everything on the frame
-//     draw.to_frame(app, &frame).unwrap();
-// }
-
-
+    // set background to blue
+    draw.background().color(PLUM);
+	// draw.ellipse().color(STEELBLUE);
+	for y in 0..80{
+		for x in 0..10{
+			let color1 = random_color2();
+			for stripe in 0..8 {
+				draw.rect()
+					.color(color1)
+					.w_h(10.0, 10.0)
+					.x_y(-450.0 + (100 * stripe)as f32 + (x as f32*10.0), 400.0 - (y as f32 *10.0));
+			}
+			let mut color2 = random_color2();
+			while color1 == color2{
+				color2 = random_color2();
+			}
+			for stripe in 0..8 {
+				draw.ellipse()
+					.color(color2)
+					.w_h(7.0,7.0)
+					.x_y(-450.0 + (100 * stripe)as f32+ (x as f32*10.0), 400.0 - (y as f32 *10.0));
+			}
+		}
+	}
+    // put everything on the frame
+    draw.to_frame(app, &frame).unwrap();
+}
+*/
+/*
 fn main() {
   nannou::app(model).run();
 }
@@ -431,7 +433,7 @@ fn model(app: &App) -> Model {
 				{
 					let inputpixel = input.get_pixel(x+(80*(stripe-1)), y-80);
 					if inputpixel == nannou::image::Rgba([0, 0, 0, 255]) {
-						let mut shift = 5;
+						let shift = 5;
 						let pixel = canvas.get_pixel(x+shift+(80*(stripe-1)), y);
 						for i in stripe..8 {
 							canvas.put_pixel(x+(80*i), y, pixel);
@@ -487,4 +489,51 @@ fn view(app: &App, model: &Model, frame: Frame) {
 	draw.texture(&model.texture);
   
 	draw.to_frame(app, &frame).unwrap();
+}*/
+
+fn main() {
+	nannou::app(model)
+	.loop_mode(LoopMode::Wait)
+	.update(update)
+	.run();
+}
+
+struct Model {
+	color: nannou::color::Rgba,
+}
+
+fn model(app: &App) -> Model {
+
+	let color = random_color2();
+	let height = 720;
+	let width = 1280;
+	let _w_id = app
+		.new_window()
+		.size(width, height)
+		.title("Rustereo")
+		.event(event)
+		.view(view)
+		.build()
+		.unwrap();
+	Model {
+		color,
+	}
+}
+
+fn event(_app: &App, _model: &mut Model, event: WindowEvent) {
+	match event {
+		WindowEvent::KeyReleased(key) => {
+			println!("{:?}", key);
+			_model.color = random_color2();
+		}
+		_ => {}
+	}
+}
+
+fn update(_app: &App, _model: &mut Model, _update: Update) {
+}
+
+fn view(_app: &App, _model: &Model, frame: Frame) {
+	// let color = random_color2();
+	frame.clear(_model.color);
 }
