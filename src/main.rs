@@ -499,12 +499,13 @@ fn main() {
 }
 
 struct Model {
-	color: nannou::color::Rgba,
+	canvas: nannou::draw::Draw,
+	height: u32,
+	width: u32,
 }
 
 fn model(app: &App) -> Model {
 
-	let color = random_color2();
 	let height = 720;
 	let width = 1280;
 	let _w_id = app
@@ -515,16 +516,55 @@ fn model(app: &App) -> Model {
 		.view(view)
 		.build()
 		.unwrap();
+	let canvas = draw_picture(height, width);
 	Model {
-		color,
+		canvas,
+		height,
+		width,
 	}
+}
+
+fn draw_picture(height:u32, width:u32 ) -> nannou::draw::Draw
+{
+	let s_width = width / 8;//stripe width
+	let s_row_size = (s_width / 10) as f32;//size of elements in a row, for 10 elements per row
+	let canvas = nannou::draw::Draw::new();
+	// canvas.background().color(PLUM);
+	// draw.ellipse().color(STEELBLUE);
+	for y in 0..s_width{
+		for x in 0..10{
+			let color1 = random_color2();
+			for stripe in 0..8 {
+				canvas.rect()
+					.color(color1)
+					.w_h(s_row_size, s_row_size)
+					.x_y(- ((width/2) as f32) + (s_width * stripe)as f32 + (x as f32*s_row_size), (height/2) as f32 - (y as f32 *s_row_size));
+			}
+			// let mut color2 = random_color2();
+			// while color1 == color2{
+			// 	color2 = random_color2();
+			// }
+			// for stripe in 0..8 {
+			// 	canvas.ellipse()
+			// 		.color(color2)
+			// 		.w_h(7.0,7.0)
+			// 		.x_y(-450.0 + (100 * stripe)as f32+ (x as f32*10.0), 400.0 - (y as f32 *10.0));
+			// }
+		}
+	}
+	canvas
 }
 
 fn event(_app: &App, _model: &mut Model, event: WindowEvent) {
 	match event {
 		WindowEvent::KeyReleased(key) => {
 			println!("{:?}", key);
-			_model.color = random_color2();
+			match key {
+				Key::Space => {
+					_model.canvas = draw_picture(_model.height, _model.width);
+				}
+				_ => {}
+			}
 		}
 		_ => {}
 	}
@@ -535,5 +575,6 @@ fn update(_app: &App, _model: &mut Model, _update: Update) {
 
 fn view(_app: &App, _model: &Model, frame: Frame) {
 	// let color = random_color2();
-	frame.clear(_model.color);
+	_model.canvas.to_frame(_app, &frame).unwrap();
+	// frame.clear(_model.color);
 }
