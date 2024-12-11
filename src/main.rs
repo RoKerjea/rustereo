@@ -515,7 +515,7 @@ fn model(app: &App) -> Model {
 		.view(view)
 		.build()
 		.unwrap();
-	let canvas = watercolor(height, width);
+	let canvas = truchet(height, width);
 	Model {
 		canvas,
 		height,
@@ -549,16 +549,13 @@ fn watercolor_stroke(color: Hsv, _height:u32, _width:u32, canvas: &nannou::draw:
 		let radius = rng.gen_range(20.0..=50.0);
         let x = radius * (TAU * phase).cos();
         let y = radius * (TAU * phase).sin();
-		// let r = color.red * 255.0 + rng.gen_range(-25.0..=25.0);
-		// let g = color.green * 255.0 + rng.gen_range(-25.0..=25.0);
-		// let b = color.blue * 255.0 + rng.gen_range(-25.0..=25.0);
 		let mut lin:LinSrgba = color.into();
+		lin.red += rng.gen_range(-0.1..=0.1);
+		lin.green += rng.gen_range(-0.1..=0.1);
+		lin.blue += rng.gen_range(-0.1..=0.1);
 		lin.alpha = 0.02;
         (pt2(x, y), lin)
     });
-	let mut rng = rand::thread_rng();
-	// let max_y = (_height / 2) as f32;
-	// let max_x = (_width / 2) as f32;
     canvas.polygon()
         .x(point[0])
 		.y(point[1])
@@ -573,13 +570,8 @@ draw a circle
 draw a shape "like" a circle, but with less precision  */
 	let mut rng = rand::thread_rng();
 	let canvas = nannou::draw::Draw::new();
-	// canvas.background().color(GREY);
-	// let r = rng.gen_range(0.2..=0.8);
-	// let g = rng.gen_range(0.2..=0.8);
-	// let b = rng.gen_range(0.2..=0.8);
-	// let color1 = nannou::color::Rgba::new(r, g, b, 1.0);
 	let mut hsv = nannou::color::Hsv::new(rng.gen_range(0.0..=360.0), 0.5, 0.5);
-	// canvas.background().color(hsv);
+	canvas.background().color(hsv);
 	let mut point = vec![0.0, 0.0];
 	let max_var = 20.0;
 	let max_dist = 50.0;
@@ -629,6 +621,94 @@ draw a shape "like" a circle, but with less precision  */
 		}
 		watercolor_stroke(hsv, _height, _width, &canvas, &point);
 	}
+
+	let mut hsv2 = nannou::color::Hsv::new(rng.gen_range(0.0..=360.0), 0.5, 0.5);
+	let ori_hue = hsv2.hue.to_positive_degrees();
+	for _ in 0..1000 {
+		point[0] += rng.gen_range(-max_dist..=max_dist);
+		point[1] += rng.gen_range(-max_dist..=max_dist);
+		hsv2.hue += rng.gen_range(-range..=range);
+		hsv2.saturation += rng.gen_range(-range..=range);
+		hsv2.value += rng.gen_range(-range..=range);
+		if point[0] > _width as f32 / 2.0 {
+			point[0] = -(_width as f32 / 2.0);
+		}
+		if point[0] < -(_width as f32 / 2.0) {
+			point[0] = _width as f32 / 2.0;
+		}
+		if point[1] > _height as f32 / 2.0 {
+			point[1] = -(_height as f32 / 2.0);
+		}
+		if point[1] < -(_height as f32 / 2.0) {
+			point[1] = _height as f32 / 2.0;
+		}
+		if hsv2.saturation > 1.0 {
+			hsv2.saturation = 1.0;
+		}
+		if hsv2.saturation < 0.4 {
+			hsv2.saturation = 0.4;
+		}
+		if hsv2.value > 0.7{
+			hsv2.value = 0.7;
+		}
+		if hsv2.value < 0.3 {
+			hsv2.value = 0.30;
+		}
+		if hsv2.hue.to_positive_degrees() > 360.0 {
+			hsv2.hue -= 360.0;
+		}
+		if hsv2.hue.to_positive_degrees() < 0.0 {
+			hsv2.hue += 360.0;
+		}
+		if hsv2.hue.to_positive_degrees() > ori_hue + max_var {
+			hsv2.hue = (ori_hue + max_var).into();
+		}
+		if hsv2.hue.to_positive_degrees() < ori_hue - max_var {
+			hsv2.hue = (ori_hue - max_var).into();
+		}
+		watercolor_stroke(hsv, _height, _width, &canvas, &point);
+	}
+	canvas
+}
+
+fn truchet(height:u32, width:u32) -> nannou::draw::Draw
+{
+	let canvas = nannou::draw::Draw::new();
+	canvas.background().color(WHITE);
+	let num_elem = 15;
+	let num_rows = num_elem/5;
+
+	let n_points = 91;
+    let radius = height as f32 * 0.16;
+    let points = (0..n_points).map(|i| {
+        let fract = i as f32 / 360.0;
+        let phase = fract;
+        let x = radius * (TAU * phase).cos();
+        let y = radius * (TAU * phase).sin();
+        pt2(x, y)
+    });
+	let mut rng = rand::thread_rng();
+	let rotation = rng.gen_range(0..=3);
+	let rot = rotation as f32 * PI/2.0;
+	for y in 0..5{
+		for x in 0..7{
+			canvas.polyline()
+				.rotate(PI + rot)
+				.x_y(-radius*5.0 + (radius * 2.0 * x as f32), radius*5.0 - (radius * 2.0 * y as f32))
+				// .stroke(BLACK)
+				.stroke_weight(40.0)
+				.join_round()
+				.points(points.clone());
+
+			canvas.polyline()
+				.rotate(0.0 + rot)
+				.x_y(-radius*7.0+ (radius * 2.0 * x as f32), radius*3.0 - (radius * 2.0 * y as f32))
+				// .stroke(BLACK)
+				.stroke_weight(40.0)
+				.join_round()
+				.points(points.clone());
+		}
+	}
 	canvas
 }
 
@@ -668,7 +748,7 @@ fn event(_app: &App, _model: &mut Model, event: WindowEvent) {
 			println!("{:?}", key);
 			match key {
 				Key::Space => {
-					_model.canvas = watercolor(_model.height, _model.width);
+					_model.canvas = truchet(_model.height, _model.width);
 				}
 				_ => {}
 			}
@@ -682,4 +762,6 @@ fn update(_app: &App, _model: &mut Model, _update: Update) {
 
 fn view(_app: &App, _model: &Model, frame: Frame) {
 	_model.canvas.to_frame(_app, &frame).unwrap();
+	// let file_path = "/mnt/nfs/homes/rokerjea/rustereo/assets/images/watercolor.png";
+    // _app.main_window().capture_frame(file_path);
 }
