@@ -714,6 +714,7 @@ fn truchet(height:u32, width:u32) -> nannou::draw::Draw
 						// .x_y(-radius*5.0 + (radius * 2.0 * x as f32), radius*5.0 - (radius * 2.0 * y as f32))
 						.stroke_weight(40.0)
 						.join_round()
+						.caps_round()
 						.points(points.clone());
 
 					match rotation {
@@ -741,6 +742,7 @@ fn truchet(height:u32, width:u32) -> nannou::draw::Draw
 						// .x_y(-radius*7.0+ (radius * 2.0 * x as f32), radius*3.0 - (radius * 2.0 * y as f32))
 						.stroke_weight(40.0)
 						.join_round()
+						.caps_round()
 						.points(points.clone());
 		}
 	}
