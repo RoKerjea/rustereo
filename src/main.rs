@@ -688,25 +688,60 @@ fn truchet(height:u32, width:u32) -> nannou::draw::Draw
         pt2(x, y)
     });
 	let mut rng = rand::thread_rng();
-	let rotation = rng.gen_range(0..=3);
-	let rot = rotation as f32 * PI/2.0;
-	for y in 0..5{
-		for x in 0..7{
-			canvas.polyline()
-				.rotate(PI + rot)
-				.x_y(-radius*5.0 + (radius * 2.0 * x as f32), radius*5.0 - (radius * 2.0 * y as f32))
-				// .stroke(BLACK)
-				.stroke_weight(40.0)
-				.join_round()
-				.points(points.clone());
+	// eprintln!("rotation: {}", rotation);
+	for col in 0..5{
+		for row in 0..7{
+			let rotation = rng.gen_range(0..=3);
+			let rot = rotation as f32 * PI/2.0;
+			let mut x = 0.0;
+			let mut y = 0.0;
+			match rotation {
+				1 => {
+					x += radius*2.0;
+				}
+				2 => {
+					x += radius*2.0;
+					y += radius*2.0;
+				}
+				3 => {
+					y += radius*2.0;
+				}
+				_ => {}
+			}
+					canvas.polyline()
+						.rotate(0.0 + rot)
+						.x_y(x - radius*7.0+ (radius * 2.0 * row as f32), y + radius*4.0 - (radius * 2.0 * col as f32))
+						// .x_y(-radius*5.0 + (radius * 2.0 * x as f32), radius*5.0 - (radius * 2.0 * y as f32))
+						.stroke_weight(40.0)
+						.join_round()
+						.points(points.clone());
 
-			canvas.polyline()
-				.rotate(0.0 + rot)
-				.x_y(-radius*7.0+ (radius * 2.0 * x as f32), radius*3.0 - (radius * 2.0 * y as f32))
-				// .stroke(BLACK)
-				.stroke_weight(40.0)
-				.join_round()
-				.points(points.clone());
+					match rotation {
+						0 => {
+							x = radius*2.0;
+							y = radius*2.0;
+						}
+						1 => {
+							x = 0.0;
+							y = radius*2.0;
+						}
+						2 => {
+							x = 0.0;
+							y = 0.0;
+						}
+						3 => {
+							x = radius*2.0;
+							y = 0.0;
+						}
+						_ => {}
+					}
+					canvas.polyline()
+						.rotate(PI + rot)
+						.x_y(x - radius*7.0+ (radius * 2.0 * row as f32), y + radius*4.0 - (radius * 2.0 * col as f32))
+						// .x_y(-radius*7.0+ (radius * 2.0 * x as f32), radius*3.0 - (radius * 2.0 * y as f32))
+						.stroke_weight(40.0)
+						.join_round()
+						.points(points.clone());
 		}
 	}
 	canvas
