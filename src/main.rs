@@ -675,11 +675,13 @@ fn truchet(height:u32, width:u32) -> nannou::draw::Draw
 {
 	let canvas = nannou::draw::Draw::new();
 	canvas.background().color(WHITE);
-	let num_elem = 15;
-	let num_rows = num_elem/5;
+	let col_count = 6;
+    let radius = height as f32/(col_count as f32 * 2.0);
+	let row_count = (width as f32/(radius*2.0)) as u32 + 1;
+
 
 	let n_points = 91;
-    let radius = height as f32 * 0.16;
+    // let radius = height as f32 * 0.16;
     let points = (0..n_points).map(|i| {
         let fract = i as f32 / 360.0;
         let phase = fract;
@@ -689,8 +691,8 @@ fn truchet(height:u32, width:u32) -> nannou::draw::Draw
     });
 	let mut rng = rand::thread_rng();
 	// eprintln!("rotation: {}", rotation);
-	for col in 0..5{
-		for row in 0..7{
+	for col in 0..col_count{
+		for row in 0..row_count{
 			let rotation = rng.gen_range(0..=3);
 			let rot = rotation as f32 * PI/2.0;
 			let mut x = 0.0;
@@ -710,7 +712,7 @@ fn truchet(height:u32, width:u32) -> nannou::draw::Draw
 			}
 					canvas.polyline()
 						.rotate(0.0 + rot)
-						.x_y(x - radius*7.0+ (radius * 2.0 * row as f32), y + radius*4.0 - (radius * 2.0 * col as f32))
+						.x_y(x - (width as f32 /2.0) + (radius * 2.0 * row as f32), y + radius*4.0 - (radius * 2.0 * col as f32))
 						// .x_y(-radius*5.0 + (radius * 2.0 * x as f32), radius*5.0 - (radius * 2.0 * y as f32))
 						.stroke_weight(40.0)
 						.join_round()
@@ -738,7 +740,7 @@ fn truchet(height:u32, width:u32) -> nannou::draw::Draw
 					}
 					canvas.polyline()
 						.rotate(PI + rot)
-						.x_y(x - radius*7.0+ (radius * 2.0 * row as f32), y + radius*4.0 - (radius * 2.0 * col as f32))
+						.x_y(x - (width as f32 /2.0) + (radius * 2.0 * row as f32), y + radius*4.0 - (radius * 2.0 * col as f32))
 						// .x_y(-radius*7.0+ (radius * 2.0 * x as f32), radius*3.0 - (radius * 2.0 * y as f32))
 						.stroke_weight(40.0)
 						.join_round()
