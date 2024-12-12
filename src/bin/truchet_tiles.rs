@@ -77,6 +77,7 @@ fn truchet(height:u32, width:u32) -> nannou::draw::Draw
 	let row_count = (width as f32/(radius*2.0)) as u32 + 1;
 	let line_weight = 3.0;
 
+	let color = random_color2();
 	let n_points = 91;
     // let radius = height as f32 * 0.16;
     let points = (0..n_points).map(|i| {
@@ -84,7 +85,7 @@ fn truchet(height:u32, width:u32) -> nannou::draw::Draw
         let phase = fract;
         let x = radius * (TAU * phase).cos();
         let y = radius * (TAU * phase).sin();
-        pt2(x, y)
+        (pt2(x, y), color)
     });
 	let mut rng = rand::thread_rng();
 	// eprintln!("rotation: {}", rotation);
@@ -114,7 +115,7 @@ fn truchet(height:u32, width:u32) -> nannou::draw::Draw
 						.stroke_weight(line_weight)
 						.join_round()
 						.caps_round()
-						.points(points.clone());
+						.points_colored(points.clone());
 
 					match rotation {
 						0 => {
@@ -142,7 +143,7 @@ fn truchet(height:u32, width:u32) -> nannou::draw::Draw
 						.stroke_weight(line_weight)
 						.join_round()
 						.caps_round()
-						.points(points.clone());
+						.points_colored(points.clone());
 		}
 	}
 	canvas
