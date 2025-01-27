@@ -13,6 +13,13 @@ an array of edges, each edge is a vector from a point to another point
 (if i keep the points, i don't need to apply rotation operations at any point)
 which means i need to apply roation operations before checking for collision
 
+steps to test:
+create a rectangle from points+size (need rotation too)
+compapre two rectangles
+compare one rect to all existing ones
+draw all those
+paint inside of rect, or take part of another image toput in place of that one
+
  */
 
 
@@ -40,7 +47,10 @@ fn polygon_collision(poly1: &Polygon, poly2: &Polygon) -> bool
 		} else {
 			let edge = poly2.edges[i - edges1_count];
 		}
-		let axis = (-edge.1, edge.0);
-		
+		let axis = (-edge.1, edge.0);//need normalized axis
+		//create 4 float for min and max x and y of both polygons
+		//check intervaldistance from thos 4 points
+		//end of loop
 	}
+	false
 }
