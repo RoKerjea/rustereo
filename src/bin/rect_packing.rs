@@ -31,6 +31,9 @@ size of 50 at start
 to detect, i need to create a polygon struct
 so, a vec of points, corner value, coner value + xsize, plus ysize, plus both
 call new polygon on it
+
+debug idea:
+print list of polygons at end of loop to see wich are colliding to debug
 */
 use rand::Rng;
 use nannou::prelude::*;
