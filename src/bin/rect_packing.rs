@@ -21,31 +21,170 @@ draw all those
 paint inside of rect, or take part of another image toput in place of that one
 
  */
+/*rect generation:
+nannou can use size and a point to generate a rect
+but i can also use lines to create any polygons i want
+lines might be closer to the polygon detection function, but a bit more complex for a start
+while 0->100
+rand corner value between xmin and xmax, same for y
+size of 50 at start
+to detect, i need to create a polygon struct
+so, a vec of points, corner value, coner value + xsize, plus ysize, plus both
+call new polygon on it
+*/
+use rand::Rng;
+use nannou::prelude::*;
+use nannou::event::Key;
+// fn main()
+// {
+// 	let mut vec1 = vec![];
+// 	vec1.push((1.0,1.0));
+// 	vec1.push((1.0,0.0));
+// 	vec1.push((0.0,0.0));
+// 	vec1.push((0.0,1.0));
+// 	let poly1 = Polygon::new(vec1);
+// 	let mut vec2 = vec![];
+// 	// vec2.push((3.0,3.0));
+// 	// vec2.push((3.0,2.0));
+// 	// vec2.push((2.0,2.0));
+// 	// vec2.push((2.0,3.0));
+// 	vec2.push((0.5,0.5));
+// 	vec2.push((0.5,1.5));
+// 	vec2.push((1.5,1.5));
+// 	vec2.push((1.5,0.5));
+// 	let poly2 = Polygon::new(vec2);
+// 	if polygon_collision(&poly1, &poly2){
+// 		eprintln!("they collide");
+// 	} else {
+// 		eprintln!("they don't collide");
+// 	}
+// }
+fn main() {
+	nannou::app(model)
+	.loop_mode(LoopMode::Wait)
+	.update(update)
+	.run();
+}
 
+struct Model {
+	canvas: nannou::draw::Draw,
+	height: u32,
+	width: u32,
+}
 
-fn main()
-{
-	let mut vec1 = vec![];
-	vec1.push((1.0,1.0));
-	vec1.push((1.0,0.0));
-	vec1.push((0.0,0.0));
-	vec1.push((0.0,1.0));
-	let poly1 = Polygon::new(vec1);
-	let mut vec2 = vec![];
-	// vec2.push((3.0,3.0));
-	// vec2.push((3.0,2.0));
-	// vec2.push((2.0,2.0));
-	// vec2.push((2.0,3.0));
-	vec2.push((0.5,0.5));
-	vec2.push((0.5,1.5));
-	vec2.push((1.5,1.5));
-	vec2.push((1.5,0.5));
-	let poly2 = Polygon::new(vec2);
-	if polygon_collision(&poly1, &poly2){
-		eprintln!("they collide");
-	} else {
-		eprintln!("they don't collide");
+fn model(app: &App) -> Model {
+
+	let height = 720;
+	let width = 1280;
+	let _w_id = app
+		.new_window()
+		.size(width, height)
+		.title("rect")
+		.event(event)
+		.view(view)
+		.build()
+		.unwrap();
+	let canvas = rect_packing(height, width);
+	Model {
+		canvas,
+		height,
+		width,
 	}
+}
+
+fn random_color2() -> nannou::color::Rgba {
+	let color1 = nannou::color::Rgba::new(96.0 / 255.0, 108.0 / 255.0, 56.0 / 255.0, 1.0);
+	let color2 = nannou::color::Rgba::new(40.0 / 255.0, 54.0 / 255.0, 24.0 / 255.0, 1.0);
+	let color3 = nannou::color::Rgba::new(254.0 / 255.0, 250.0 / 255.0, 224.0 / 255.0, 1.0);
+	let color4 = nannou::color::Rgba::new(221.0 / 255.0, 161.0 / 255.0, 94.0 / 255.0, 1.0);
+	let color5 = nannou::color::Rgba::new(188.0 / 255.0, 108.0 / 255.0, 37.0 / 255.0, 1.0);
+	let mut rng = rand::thread_rng();
+	let color = rng.gen_range(0..=4);
+	match color {
+		0 => color1,
+		1 => color2,
+		2 => color3,
+		3 => color4,
+		4 => color5,
+		_ => color1,
+	}
+}
+
+fn rect_packing(height:u32, width:u32) -> nannou::draw::Draw
+{
+	let canvas = nannou::draw::Draw::new();
+	canvas.background().color(WHITE);
+	let color = random_color2();
+	let mut rng = rand::thread_rng();
+	let y = rng.gen_range(0.0..=height as f32) - height as f32/2.0;
+	let x = rng.gen_range(0.0..=width as f32) - width as f32/2.0;
+	let mut vec1 = vec![];
+	vec1.push((x, y));
+	vec1.push((x+30.0, y));
+	vec1.push((x+30.0, y+30.0));
+	vec1.push((x, y+30.0));
+	let poly1 = Polygon::new(vec1);
+	let mut polygon_list = vec![];
+	polygon_list.push(poly1);
+	canvas.rect()
+		.color(color)
+		.w_h(30.0, 30.0)
+		.x_y(x + 15.0, y + 15.0);
+	for _i in 0..50000{
+		let color = random_color2();
+		let y = rng.gen_range(0.0..=height as f32) - height as f32/2.0;
+		let x = rng.gen_range(0.0..=width as f32) - width as f32/2.0;
+		let mut vec = vec![];
+		vec.push((x, y));
+		vec.push((x, y+30.0));
+		vec.push((x+30.0, y+30.0));
+		vec.push((x+30.0, y));
+		let poly = Polygon::new(vec);
+		if !new_poly_collision(&poly, &polygon_list){
+			polygon_list.push(poly);
+			canvas.rect()
+				.color(color)
+				.w_h(30.0, 30.0)
+				.x_y(x + 15.0, y + 15.0);
+		}
+	}
+	canvas
+}
+
+fn new_poly_collision(new_poly: &Polygon, poly_list: &Vec<Polygon>) -> bool
+{
+	for i in 0..poly_list.len() - 1{
+		if polygon_collision(new_poly, &poly_list[i]){
+			return true
+		}
+	}
+	false
+}
+
+fn event(_app: &App, _model: &mut Model, event: WindowEvent) {
+	match event {
+		WindowEvent::KeyReleased(key) => {
+			println!("{:?}", key);
+			match key {
+				Key::Space => {
+					_model.canvas = rect_packing(_model.height, _model.width);
+				}
+				_ => {}
+			}
+		}
+		_ => {}
+	}
+}
+
+
+
+fn update(_app: &App, _model: &mut Model, _update: Update) {
+}
+
+fn view(_app: &App, _model: &Model, frame: Frame) {
+	_model.canvas.to_frame(_app, &frame).unwrap();
+	let file_path = "/mnt/nfs/homes/rokerjea/rustereo/assets/images/rect.png";
+    _app.main_window().capture_frame(file_path);
 }
 pub struct Polygon
 {
