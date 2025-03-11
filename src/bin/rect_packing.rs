@@ -392,3 +392,23 @@ fn polygon_collision(poly1: &Polygon, poly2: &Polygon) -> bool
 	}
 	result
 }
+
+pub fn is_polygon_inside(poly: Polygon, shape : Polygon) -> bool
+{
+	for i in 0..poly.points.len(){
+		if !point_in_poly(poly.points[i], &shape) {
+			return false;
+		}
+	}
+	true
+}
+//adapted from:
+//https://wrfranklin.org/Research/Short_Notes/pnpoly.html
+// pub fn point_in_poly(point :Vec2, shape: &Polygon) -> bool
+// {
+// 	let mut res = 0;
+// 	for i in 0..shape.points.len() {
+// 		if 
+// 	}
+// 	true
+// }
