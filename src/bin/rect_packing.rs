@@ -32,8 +32,7 @@ to detect, i need to create a polygon struct
 so, a vec of points, corner value, coner value + xsize, plus ysize, plus both
 call new polygon on it
 
-debug idea:
-print list of polygons at end of loop to see wich are colliding to debug
+for the textured points polygon, 
 */
 use rand::Rng;
 use nannou::prelude::*;
@@ -76,6 +75,7 @@ fn main() {
 }
 
 struct Model {
+	wind: WindowId,
 	canvas: nannou::draw::Draw,
 	height: u32,
 	width: u32,
@@ -95,6 +95,7 @@ fn model(app: &App) -> Model {
 		.unwrap();
 	let canvas = rect_packing(height, width);
 	Model {
+		wind : _w_id,
 		canvas,
 		height,
 		width,
@@ -122,7 +123,9 @@ fn random_color2() -> nannou::color::Rgba {
 fn rect_packing(height:u32, width:u32) -> nannou::draw::Draw
 {
 	let canvas = nannou::draw::Draw::new();
-	canvas.background().color(WHITE);
+	canvas.rect()
+		.color(WHITE)
+		.w_h(width as f32, height as f32);
 	let color = random_color2();
 	let mut rng = rand::thread_rng();
 	// let y = rng.gen_range(0.0..=height as f32) - height as f32/2.0;
@@ -270,11 +273,21 @@ fn view(_app: &App, _model: &Model, frame: Frame) {
 	let file_path = "assets/images/rect.png";
     _app.main_window().capture_frame(file_path);
 }
+
+
+//############################################################
+
+
+
+
+
 pub struct Polygon
 {
 	id: u32,
 	points: Vec<Vec2>,
 	edges: Vec<Vec2>,
+	//i could maybe add a field of rotation value, and one of rotated points?
+	// i can just add those in the constructor
 }
 
 impl Polygon
@@ -370,6 +383,8 @@ fn polygon_collision(poly1: &Polygon, poly2: &Polygon) -> bool
 		if poly1.points[0][0] > poly2.points[0][0] + 4.0 && poly1.points[0][1] > poly2.points[0][1] + 4.0 && poly1.points[2][0] < poly2.points[2][0] -4.0 && poly1.points[2][1] < poly2.points[2][1] -4.0
 		{
 			return false;
+			//maybe get a specific flag here to note that the current polygon is inside the polygon2?
+			//but what if it's inside two polygons?, well the 
 		}
 		//check intervaldistance from thos 4 points
 		//can add a willintersect check, which could probably be used to make sure those 2 polygons are at least at a certain distance of each others
