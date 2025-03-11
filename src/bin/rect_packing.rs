@@ -167,8 +167,8 @@ fn rect_packing(height:u32, width:u32) -> nannou::draw::Draw
 	polygon_list.push(poly1);
 	for _i in 0..50{
 		let color = random_color2();
-		let y = rng.gen_range(0.0..=height as f32) - height as f32/2.0;
-		let x = rng.gen_range(0.0..=width as f32) - width as f32/2.0;
+		let y = rng.gen_range(0.0..=height as f32 - size) - height as f32/2.0;
+		let x = rng.gen_range(0.0..=width as f32 - size) - width as f32/2.0;
 		let mut vec = vec![];
 		vec.push(pt2(x, y));
 		vec.push(pt2(x, y+size));
@@ -189,8 +189,8 @@ fn rect_packing(height:u32, width:u32) -> nannou::draw::Draw
 	size = 30.0;
 	for _i in 0..5000{
 		let color = random_color2();
-		let y = rng.gen_range(0.0..=height as f32) - height as f32/2.0;
-		let x = rng.gen_range(0.0..=width as f32) - width as f32/2.0;
+		let y = rng.gen_range(0.0..=height as f32 - size) - height as f32/2.0;
+		let x = rng.gen_range(0.0..=width as f32 - size) - width as f32/2.0;
 		let mut vec = vec![];
 		vec.push(pt2(x, y));
 		vec.push(pt2(x, y+size));
@@ -211,8 +211,8 @@ fn rect_packing(height:u32, width:u32) -> nannou::draw::Draw
 	size = 10.0;
 	for _i in 0..5000{
 		let color = random_color2();
-		let y = rng.gen_range(0.0..=height as f32) - height as f32/2.0;
-		let x = rng.gen_range(0.0..=width as f32) - width as f32/2.0;
+		let y = rng.gen_range(0.0..=height as f32 - size) - height as f32/2.0;
+		let x = rng.gen_range(0.0..=width as f32 -size) - width as f32/2.0;
 		let mut vec = vec![];
 		vec.push(pt2(x, y));
 		vec.push(pt2(x, y+size));
@@ -239,7 +239,7 @@ fn rect_packing(height:u32, width:u32) -> nannou::draw::Draw
 
 fn new_poly_collision(new_poly: &Polygon, poly_list: &Vec<Polygon>) -> bool
 {
-	for i in 0..poly_list.len() - 1{
+	for i in 0..poly_list.len(){
 		if polygon_collision(new_poly, &poly_list[i]){
 			return true
 		}
