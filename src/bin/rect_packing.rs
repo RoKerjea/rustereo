@@ -119,37 +119,60 @@ fn rect_packing(height:u32, width:u32) -> nannou::draw::Draw
 	canvas.background().color(WHITE);
 	let color = random_color2();
 	let mut rng = rand::thread_rng();
-	let y = rng.gen_range(0.0..=height as f32) - height as f32/2.0;
-	let x = rng.gen_range(0.0..=width as f32) - width as f32/2.0;
-	let mut vec1 = vec![];
-	vec1.push((x, y));
-	vec1.push((x+30.0, y));
-	vec1.push((x+30.0, y+30.0));
-	vec1.push((x, y+30.0));
-	let poly1 = Polygon::new(vec1);
-	let mut polygon_list = vec![];
-	polygon_list.push(poly1);
-	canvas.rect()
-		.color(color)
-		.w_h(30.0, 30.0)
-		.x_y(x + 15.0, y + 15.0);
-	for _i in 0..50000{
+	// let y = rng.gen_range(0.0..=height as f32) - height as f32/2.0;
+	// let x = rng.gen_range(0.0..=width as f32) - width as f32/2.0;
+	// let mut vec1 = vec![];
+	// vec1.push((x, y));
+	// vec1.push((x+30.0, y));
+	// vec1.push((x+30.0, y+30.0));
+	// vec1.push((x, y+30.0));
+	// let poly1 = Polygon::new(vec1);
+	// let mut polygon_list = vec![];
+	// polygon_list.push(poly1);
+	// canvas.rect()
+	// 	.color(color)
+	// 	.w_h(30.0, 30.0)
+	// 	.x_y(x + 15.0, y + 15.0);
+	// let n_points = 4;
+    // let radius = 30.0;
+    // let points = (0..n_points).map(|i| {
+    //     let fract = i as f32 / n_points as f32;
+    //     let phase = fract;
+    //     let x = radius * (TAU * phase).cos();
+    //     let y = radius * (TAU * phase).sin();
+    //     pt2(x, y)
+    // });
+	let mut vec = vec![];
+	let x = 0.0;
+	let y = 0.0;
+	vec.push(pt2(x, y));
+	vec.push(pt2(x+30.0, y));
+	vec.push(pt2(x+30.0, y+30.0));
+	vec.push(pt2(x, y+30.0));
+    canvas.polygon()
+        .color(color)
+        .stroke(BLACK)
+        .stroke_weight(2.0)
+        .join_round()
+        .points(vec);
+	// let poly1 = Polygon::new(vec);
+	// let mut polygon_list = vec![];
+	// polygon_list.push(poly1);
+	for _i in 0..50{
 		let color = random_color2();
 		let y = rng.gen_range(0.0..=height as f32) - height as f32/2.0;
 		let x = rng.gen_range(0.0..=width as f32) - width as f32/2.0;
 		let mut vec = vec![];
-		vec.push((x, y));
-		vec.push((x, y+30.0));
-		vec.push((x+30.0, y+30.0));
-		vec.push((x+30.0, y));
-		let poly = Polygon::new(vec);
-		if !new_poly_collision(&poly, &polygon_list){
-			polygon_list.push(poly);
-			canvas.rect()
-				.color(color)
-				.w_h(30.0, 30.0)
-				.x_y(x + 15.0, y + 15.0);
-		}
+		vec.push(pt2(x, y));
+		vec.push(pt2(x, y+30.0));
+		vec.push(pt2(x+30.0, y+30.0));
+		vec.push(pt2(x+30.0, y));
+		canvas.polygon()
+			.color(color)
+			.stroke(BLACK)
+			.stroke_weight(2.0)
+			.join_round()
+			.points(vec);
 	}
 	canvas
 }
