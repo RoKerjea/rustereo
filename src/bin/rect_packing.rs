@@ -187,7 +187,7 @@ fn rect_packing(height:u32, width:u32) -> nannou::draw::Draw
 		}
 	}
 	size = 30.0;
-	for _i in 0..5000{
+	for _i in 0..8000{
 		let color = random_color2();
 		let y = rng.gen_range(0.0..=height as f32 - size) - height as f32/2.0;
 		let x = rng.gen_range(0.0..=width as f32 - size) - width as f32/2.0;
@@ -209,7 +209,7 @@ fn rect_packing(height:u32, width:u32) -> nannou::draw::Draw
 		}
 	}
 	size = 10.0;
-	for _i in 0..5000{
+	for _i in 0..7000{
 		let color = random_color2();
 		let y = rng.gen_range(0.0..=height as f32 - size) - height as f32/2.0;
 		let x = rng.gen_range(0.0..=width as f32 -size) - width as f32/2.0;
@@ -356,8 +356,10 @@ fn polygon_collision(poly1: &Polygon, poly2: &Polygon) -> bool
 		}
 		let axis  = perpendicular_axis(edge);//need normalized axis
 		//create 4 float for min and max x and y of both polygons
-		let minmax_a = project_polygon(axis, poly1);
+		let mut minmax_a = project_polygon(axis, poly1);
 		let minmax_b = project_polygon(axis, poly2);
+		minmax_a.0 -= 4.0;
+		minmax_a.1 += 4.0;
 		if interval_distance(minmax_a, minmax_b) > 0.0
 		{
 			// eprintln!("found a separating axis for points min A: {} , max A: {}", minmax_a.0, minmax_a.1);
@@ -365,7 +367,7 @@ fn polygon_collision(poly1: &Polygon, poly2: &Polygon) -> bool
 			// eprintln!("axis: {} {}", axis[0], axis[1]);
 			return false;
 		}
-		if poly1.points[0][0] > poly2.points[0][0] && poly1.points[0][1] > poly2.points[0][1] && poly1.points[2][0] < poly2.points[2][0] && poly1.points[2][1] < poly2.points[2][1]
+		if poly1.points[0][0] > poly2.points[0][0] + 4.0 && poly1.points[0][1] > poly2.points[0][1] + 4.0 && poly1.points[2][0] < poly2.points[2][0] -4.0 && poly1.points[2][1] < poly2.points[2][1] -4.0
 		{
 			return false;
 		}
