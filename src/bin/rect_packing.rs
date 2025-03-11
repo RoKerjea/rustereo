@@ -41,27 +41,33 @@ use nannou::event::Key;
 // fn main()
 // {
 // 	let mut vec1 = vec![];
-// 	vec1.push((1.0,1.0));
-// 	vec1.push((1.0,0.0));
-// 	vec1.push((0.0,0.0));
-// 	vec1.push((0.0,1.0));
-// 	let poly1 = Polygon::new(vec1);
-// 	let mut vec2 = vec![];
-// 	// vec2.push((3.0,3.0));
-// 	// vec2.push((3.0,2.0));
-// 	// vec2.push((2.0,2.0));
-// 	// vec2.push((2.0,3.0));
-// 	vec2.push((0.5,0.5));
-// 	vec2.push((0.5,1.5));
-// 	vec2.push((1.5,1.5));
-// 	vec2.push((1.5,0.5));
-// 	let poly2 = Polygon::new(vec2);
+// 	vec1.push(vec2(597.9022,94.52768));
+// 	vec1.push(vec2(597.9022,124.52768));
+// 	vec1.push(vec2(627.9022,124.52768));
+// 	vec1.push(vec2(627.9022,94.52768));
+// 	let poly1 = Polygon::new(&vec1, 1);
+// 	let mut vecy = vec![];
+// 	vecy.push(vec2(603.067, 85.802216));
+// 	vecy.push(vec2(603.067,115.802216));
+// 	vecy.push(vec2(633.067,115.802216));
+// 	vecy.push(vec2(633.067,85.802216));
+// 	let poly2 = Polygon::new(&vecy, 2);
 // 	if polygon_collision(&poly1, &poly2){
 // 		eprintln!("they collide");
 // 	} else {
 // 		eprintln!("they don't collide");
 // 	}
 // }
+// id : 12
+// p1 : 597.9022 94.52768
+// p2 : 597.9022 124.52768
+// p3 : 627.9022 124.52768
+// p4 : 627.9022 94.52768
+// id : 13
+// p1 : 603.067 85.802216
+// p2 : 603.067 115.802216
+// p3 : 633.067 115.802216
+// p4 : 633.067 85.802216
 fn main() {
 	nannou::app(model)
 	.loop_mode(LoopMode::Wait)
@@ -142,38 +148,92 @@ fn rect_packing(height:u32, width:u32) -> nannou::draw::Draw
     //     let y = radius * (TAU * phase).sin();
     //     pt2(x, y)
     // });
+	let mut size = 100.0;
 	let mut vec = vec![];
 	let x = 0.0;
 	let y = 0.0;
 	vec.push(pt2(x, y));
-	vec.push(pt2(x+30.0, y));
-	vec.push(pt2(x+30.0, y+30.0));
-	vec.push(pt2(x, y+30.0));
+	vec.push(pt2(x, y+size));
+	vec.push(pt2(x+size, y+size));
+	vec.push(pt2(x+size, y));
+	let poly1 = Polygon::new(&vec, 0);
     canvas.polygon()
         .color(color)
         .stroke(BLACK)
         .stroke_weight(2.0)
         .join_round()
         .points(vec);
-	// let poly1 = Polygon::new(vec);
-	// let mut polygon_list = vec![];
-	// polygon_list.push(poly1);
+	let mut polygon_list = vec![];
+	polygon_list.push(poly1);
 	for _i in 0..50{
 		let color = random_color2();
 		let y = rng.gen_range(0.0..=height as f32) - height as f32/2.0;
 		let x = rng.gen_range(0.0..=width as f32) - width as f32/2.0;
 		let mut vec = vec![];
 		vec.push(pt2(x, y));
-		vec.push(pt2(x, y+30.0));
-		vec.push(pt2(x+30.0, y+30.0));
-		vec.push(pt2(x+30.0, y));
-		canvas.polygon()
-			.color(color)
-			.stroke(BLACK)
-			.stroke_weight(2.0)
-			.join_round()
-			.points(vec);
+		vec.push(pt2(x, y+size));
+		vec.push(pt2(x+size, y+size));
+		vec.push(pt2(x+size, y));
+		let poly = Polygon::new(&vec, _i);
+		if !new_poly_collision(&poly, &polygon_list)
+		{
+			polygon_list.push(poly);
+			canvas.polygon()
+				.color(color)
+				.stroke(BLACK)
+				.stroke_weight(2.0)
+				.join_round()
+				.points(vec);
+		}
 	}
+	size = 30.0;
+	for _i in 0..5000{
+		let color = random_color2();
+		let y = rng.gen_range(0.0..=height as f32) - height as f32/2.0;
+		let x = rng.gen_range(0.0..=width as f32) - width as f32/2.0;
+		let mut vec = vec![];
+		vec.push(pt2(x, y));
+		vec.push(pt2(x, y+size));
+		vec.push(pt2(x+size, y+size));
+		vec.push(pt2(x+size, y));
+		let poly = Polygon::new(&vec, _i);
+		if !new_poly_collision(&poly, &polygon_list)
+		{
+			polygon_list.push(poly);
+			canvas.polygon()
+				.color(color)
+				.stroke(BLACK)
+				.stroke_weight(2.0)
+				.join_round()
+				.points(vec);
+		}
+	}
+	size = 10.0;
+	for _i in 0..5000{
+		let color = random_color2();
+		let y = rng.gen_range(0.0..=height as f32) - height as f32/2.0;
+		let x = rng.gen_range(0.0..=width as f32) - width as f32/2.0;
+		let mut vec = vec![];
+		vec.push(pt2(x, y));
+		vec.push(pt2(x, y+size));
+		vec.push(pt2(x+size, y+size));
+		vec.push(pt2(x+size, y));
+		let poly = Polygon::new(&vec, _i);
+		if !new_poly_collision(&poly, &polygon_list)
+		{
+			polygon_list.push(poly);
+			canvas.polygon()
+				.color(color)
+				.stroke(BLACK)
+				.stroke_weight(2.0)
+				.join_round()
+				.points(vec);
+		}
+	}
+	eprintln!("there are {} polygons", polygon_list.len());
+	// for i in 0..polygon_list.len() - 1 {
+	// 	polygon_list[i].print_poly_data();
+	// }
 	canvas
 }
 
@@ -202,59 +262,63 @@ fn event(_app: &App, _model: &mut Model, event: WindowEvent) {
 	}
 }
 
-
-
 fn update(_app: &App, _model: &mut Model, _update: Update) {
 }
 
 fn view(_app: &App, _model: &Model, frame: Frame) {
 	_model.canvas.to_frame(_app, &frame).unwrap();
-	let file_path = "/mnt/nfs/homes/rokerjea/rustereo/assets/images/rect.png";
+	let file_path = "assets/images/rect.png";
     _app.main_window().capture_frame(file_path);
 }
 pub struct Polygon
 {
-	points: Vec<(f32, f32)>,
-	edges: Vec<(f32, f32)>,
+	id: u32,
+	points: Vec<Vec2>,
+	edges: Vec<Vec2>,
 }
 
 impl Polygon
 {
-	pub fn new(points_given: Vec <(f32, f32)>) -> Self
+	pub fn new(points_given: &Vec <Vec2>, _id:u32) -> Self
 	{
-		let mut new_edges : Vec<(f32, f32)> = vec![];
+		let mut new_edges : Vec<Vec2> = vec![];
 		for i in 0..points_given.len() - 1
 		{
-			let edge = (points_given[i + 1].0 - points_given[i].0, points_given[i + 1].1 - points_given[i].1);
+			let edge = points_given[i + 1] - points_given[i];
 			new_edges.push(edge);
 		}
-		let edge = (points_given[points_given.len() - 1].0 - points_given[0].0, points_given[points_given.len() - 1].1 - points_given[0].1);
+		let edge = points_given[0] - points_given[points_given.len() - 1];
 			new_edges.push(edge);
 		Self {
-			points: points_given,
+			id:_id,
+			points: points_given.to_vec(),
 			edges: new_edges,
 		}
 	}
+	pub fn print_poly_data(&self)
+	{
+		eprintln!("id : {}", self.id);
+		eprintln!("p1 : {} {}", self.points[0][0], self.points[0][1]);
+		eprintln!("p2 : {} {}", self.points[1][0], self.points[1][1]);
+		eprintln!("p3 : {} {}", self.points[2][0], self.points[2][1]);
+		eprintln!("p4 : {} {}", self.points[3][0], self.points[3][1]);
+	}
 }
 
-// fn perpendicula_axis(edge: (f32, f32)) -> (f32, f32)
-// {
-// 	return (-edge.1, edge.0);
-// }
-
-fn dot_product(axis: (f32,f32), point: (f32,f32)) -> f32
+fn perpendicular_axis(edge: Vec2) -> Vec2
 {
-	return axis.0 * point.0 + axis.1 * point.1;
+	let axis = Vec2::new(-edge.y, edge.x);
+	axis.normalize()
 }
 
-fn project_polygon(axis: (f32,f32), polygon : &Polygon) -> (f32,f32)
+fn project_polygon(axis: Vec2, polygon : &Polygon) -> (f32,f32)
 {
-	let mut dot_prod = dot_product(axis, polygon.points[0]);
+	let mut dot_prod = axis.dot(polygon.points[0]);
 	let mut min = dot_prod;
 	let mut max = dot_prod;
 	for i in 0..polygon.points.len()
 	{
-		dot_prod = dot_product(axis, polygon.points[i]);
+		dot_prod = polygon.points[i].dot(axis);
 		if dot_prod< min {
 			min = dot_prod;
 		} else if dot_prod > max {
@@ -279,8 +343,9 @@ fn polygon_collision(poly1: &Polygon, poly2: &Polygon) -> bool
 	let edges1_count = poly1.edges.len();
 	let edges2_count = poly2.edges.len();
 	let edges_sum = edges1_count + edges2_count;
+	let mut result = true;
 
-	let mut edge: (f32, f32);
+	let mut edge: Vec2;
 	for i in 0..edges_sum
 	{
 		if i < edges1_count
@@ -289,17 +354,24 @@ fn polygon_collision(poly1: &Polygon, poly2: &Polygon) -> bool
 		} else {
 			edge = poly2.edges[i - edges1_count];
 		}
-		let axis  =  (-edge.1,edge.0);//need normalized axis
+		let axis  = perpendicular_axis(edge);//need normalized axis
 		//create 4 float for min and max x and y of both polygons
 		let minmax_a = project_polygon(axis, poly1);
 		let minmax_b = project_polygon(axis, poly2);
-		if interval_distance(minmax_a, minmax_b) < 0.0
+		if interval_distance(minmax_a, minmax_b) > 0.0
 		{
-			return true;
+			// eprintln!("found a separating axis for points min A: {} , max A: {}", minmax_a.0, minmax_a.1);
+			// eprintln!("min B: {} , max B: {}", minmax_b.0, minmax_b.1);
+			// eprintln!("axis: {} {}", axis[0], axis[1]);
+			return false;
+		}
+		if poly1.points[0][0] > poly2.points[0][0] && poly1.points[0][1] > poly2.points[0][1] && poly1.points[2][0] < poly2.points[2][0] && poly1.points[2][1] < poly2.points[2][1]
+		{
+			return false;
 		}
 		//check intervaldistance from thos 4 points
 		//can add a willintersect check, which could probably be used to make sure those 2 polygons are at least at a certain distance of each others
 		//end of loop
 	}
-	false
+	result
 }

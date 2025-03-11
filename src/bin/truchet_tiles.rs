@@ -72,7 +72,7 @@ fn truchet(height:u32, width:u32) -> nannou::draw::Draw
 {
 	let canvas = nannou::draw::Draw::new();
 	canvas.background().color(WHITE);
-	let col_count = 75;
+	let col_count = 30;
     let radius = height as f32/(col_count as f32 * 2.0);
 	let row_count = (width as f32/(radius*2.0)) as u32 + 1;
 	let line_weight = 3.0;
@@ -169,6 +169,6 @@ fn update(_app: &App, _model: &mut Model, _update: Update) {
 
 fn view(_app: &App, _model: &Model, frame: Frame) {
 	_model.canvas.to_frame(_app, &frame).unwrap();
-	let file_path = "/mnt/nfs/homes/rokerjea/rustereo/assets/images/truchet.png";
+	let file_path = "assets/images/truchet.png";
     _app.main_window().capture_frame(file_path);
 }
