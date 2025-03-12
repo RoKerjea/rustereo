@@ -395,9 +395,6 @@ fn polygon_collision(poly1: &Polygon, poly2: &Polygon) -> bool
 		if is_polygon_inside(poly1, poly2) {
 			return false;
 		}
-		//check intervaldistance from thos 4 points
-		//can add a willintersect check, which could probably be used to make sure those 2 polygons are at least at a certain distance of each others
-		//end of loop
 	}
 	result
 }
@@ -412,30 +409,19 @@ pub fn is_polygon_inside(poly: &Polygon, shape : &Polygon) -> bool
 	}
 	true
 }
-pub fn point_is_in_front(point :Vec2, vert1:Vec2, vert2:Vec2) -> f32
+pub fn point_is_in_front(point :Vec2, vert1:Vec2, vert2:Vec2) -> bool
 {
 	let cross_prod = (vert1[0] - point[0]) * (vert2[1] - point[1]) - (vert1[1] - point[1]) * (vert2[0] - point[0]);
-	return cross_prod;
+	return cross_prod >= 0.0;
 }
 //adapted from:
 //https://wrfranklin.org/Research/Short_Notes/pnpoly.html
 pub fn point_in_poly(point :Vec2, shape: &Polygon) -> bool
 {
-	let mut res = 0;
 	let mut j = shape.points.len()-1;
-	// for i in 0..shape.points.len() {
-	// 	if (((shape.points[i][1]>point[1]) != (shape.points[j][1]>point[1])) &&
-	// 		(point[0] < ((shape.points[j][0]-shape.points[i][0]) * (point[1]-shape.points[i][1] / (shape.points[j][1]-shape.points[i][1]) + shape.points[i][0]))))
-	// 	{
-	// 		eprintln!("gate");
-	// 		res = !res;
-	// 	}
-	// 	j = i+1 ;
-	// }
 	let mut inside = vec![];
 	for i in 0..shape.points.len() {
-		let cross = point_is_in_front(point, shape.points[i], shape.points[j]);
-		inside.push(cross >= 0.0);
+		inside.push(point_is_in_front(point, shape.points[i], shape.points[j]));
 		j = i ;
 	}
 	for i in 1..inside.len() {
@@ -444,5 +430,4 @@ pub fn point_in_poly(point :Vec2, shape: &Polygon) -> bool
 		}
 	}
 	return true;
-	// res
 }
