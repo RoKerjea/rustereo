@@ -39,22 +39,28 @@ use nannou::prelude::*;
 use nannou::event::Key;
 // fn main()
 // {
-// 	let mut vec1 = vec![];
-// 	vec1.push(vec2(597.9022,94.52768));
-// 	vec1.push(vec2(597.9022,124.52768));
-// 	vec1.push(vec2(627.9022,124.52768));
-// 	vec1.push(vec2(627.9022,94.52768));
-// 	let poly1 = Polygon::new(&vec1, 1);
-// 	let mut vecy = vec![];
-// 	vecy.push(vec2(603.067, 85.802216));
-// 	vecy.push(vec2(603.067,115.802216));
-// 	vecy.push(vec2(633.067,115.802216));
-// 	vecy.push(vec2(633.067,85.802216));
-// 	let poly2 = Polygon::new(&vecy, 2);
-// 	if polygon_collision(&poly1, &poly2){
-// 		eprintln!("they collide");
+// 	let mut size = 50.0;
+// 	let mut vec = vec![];
+// 	let x = 0.0;
+// 	let y = 0.0;
+// 	vec.push(pt2(x, y));
+// 	vec.push(pt2(x, y+size));
+// 	vec.push(pt2(x+size, y+size));
+// 	vec.push(pt2(x+size, y));
+// 	let poly1 = Polygon::new(&vec, 0);
+// 	size = 10.0;
+// 	let mut vec2 = vec![];
+// 	let x = 10.0;
+// 	let y = 10.0;
+// 	vec2.push(pt2(x, y));
+// 	vec2.push(pt2(x, y+size));
+// 	vec2.push(pt2(x+size, y+size));
+// 	vec2.push(pt2(x+size, y));
+// 	let poly2 = Polygon::new(&vec2, 0);
+// 	if is_polygon_inside(&poly2, &poly1) {
+// 		eprintln!("poly2 in inside1");
 // 	} else {
-// 		eprintln!("they don't collide");
+// 		eprintln!("error");
 // 	}
 // }
 // id : 12
@@ -158,7 +164,7 @@ fn rect_packing(height:u32, width:u32) -> nannou::draw::Draw
 	vec.push(pt2(x, y));
 	vec.push(pt2(x, y+size));
 	vec.push(pt2(x+size, y+size));
-	vec.push(pt2(x+size, y));
+	// vec.push(pt2(x+size, y));
 	let poly1 = Polygon::new(&vec, 0);
     canvas.polygon()
         .color(color)
@@ -176,7 +182,7 @@ fn rect_packing(height:u32, width:u32) -> nannou::draw::Draw
 		vec.push(pt2(x, y));
 		vec.push(pt2(x, y+size));
 		vec.push(pt2(x+size, y+size));
-		vec.push(pt2(x+size, y));
+		// vec.push(pt2(x+size, y));
 		let poly = Polygon::new(&vec, _i);
 		if !new_poly_collision(&poly, &polygon_list)
 		{
@@ -198,7 +204,7 @@ fn rect_packing(height:u32, width:u32) -> nannou::draw::Draw
 		vec.push(pt2(x, y));
 		vec.push(pt2(x, y+size));
 		vec.push(pt2(x+size, y+size));
-		vec.push(pt2(x+size, y));
+		// vec.push(pt2(x+size, y));
 		let poly = Polygon::new(&vec, _i);
 		if !new_poly_collision(&poly, &polygon_list)
 		{
@@ -220,7 +226,7 @@ fn rect_packing(height:u32, width:u32) -> nannou::draw::Draw
 		vec.push(pt2(x, y));
 		vec.push(pt2(x, y+size));
 		vec.push(pt2(x+size, y+size));
-		vec.push(pt2(x+size, y));
+		// vec.push(pt2(x+size, y));
 		let poly = Polygon::new(&vec, _i);
 		if !new_poly_collision(&poly, &polygon_list)
 		{
@@ -380,11 +386,14 @@ fn polygon_collision(poly1: &Polygon, poly2: &Polygon) -> bool
 			// eprintln!("axis: {} {}", axis[0], axis[1]);
 			return false;
 		}
-		if poly1.points[0][0] > poly2.points[0][0] + 4.0 && poly1.points[0][1] > poly2.points[0][1] + 4.0 && poly1.points[2][0] < poly2.points[2][0] -4.0 && poly1.points[2][1] < poly2.points[2][1] -4.0
-		{
+		// if poly1.points[0][0] > poly2.points[0][0] + 4.0 && poly1.points[0][1] > poly2.points[0][1] + 4.0 && poly1.points[2][0] < poly2.points[2][0] -4.0 && poly1.points[2][1] < poly2.points[2][1] -4.0
+		// {
+		// 	return false;
+		// 	//maybe get a specific flag here to note that the current polygon is inside the polygon2?
+		// 	//but what if it's inside two polygons?, well the 
+		// }
+		if is_polygon_inside(poly1, poly2) {
 			return false;
-			//maybe get a specific flag here to note that the current polygon is inside the polygon2?
-			//but what if it's inside two polygons?, well the 
 		}
 		//check intervaldistance from thos 4 points
 		//can add a willintersect check, which could probably be used to make sure those 2 polygons are at least at a certain distance of each others
@@ -393,22 +402,47 @@ fn polygon_collision(poly1: &Polygon, poly2: &Polygon) -> bool
 	result
 }
 
-pub fn is_polygon_inside(poly: Polygon, shape : Polygon) -> bool
+pub fn is_polygon_inside(poly: &Polygon, shape : &Polygon) -> bool
 {
 	for i in 0..poly.points.len(){
 		if !point_in_poly(poly.points[i], &shape) {
+			// eprintln!("point {} is outside, x = {}, y = {}", i, poly.points[i][0], poly.points[i][1]);
 			return false;
 		}
 	}
 	true
 }
+pub fn point_is_in_front(point :Vec2, vert1:Vec2, vert2:Vec2) -> f32
+{
+	let cross_prod = (vert1[0] - point[0]) * (vert2[1] - point[1]) - (vert1[1] - point[1]) * (vert2[0] - point[0]);
+	return cross_prod;
+}
 //adapted from:
 //https://wrfranklin.org/Research/Short_Notes/pnpoly.html
-// pub fn point_in_poly(point :Vec2, shape: &Polygon) -> bool
-// {
-// 	let mut res = 0;
-// 	for i in 0..shape.points.len() {
-// 		if 
-// 	}
-// 	true
-// }
+pub fn point_in_poly(point :Vec2, shape: &Polygon) -> bool
+{
+	let mut res = 0;
+	let mut j = shape.points.len()-1;
+	// for i in 0..shape.points.len() {
+	// 	if (((shape.points[i][1]>point[1]) != (shape.points[j][1]>point[1])) &&
+	// 		(point[0] < ((shape.points[j][0]-shape.points[i][0]) * (point[1]-shape.points[i][1] / (shape.points[j][1]-shape.points[i][1]) + shape.points[i][0]))))
+	// 	{
+	// 		eprintln!("gate");
+	// 		res = !res;
+	// 	}
+	// 	j = i+1 ;
+	// }
+	let mut inside = vec![];
+	for i in 0..shape.points.len() {
+		let cross = point_is_in_front(point, shape.points[i], shape.points[j]);
+		inside.push(cross >= 0.0);
+		j = i ;
+	}
+	for i in 1..inside.len() {
+		if inside[i] != inside[i-1] {
+			return false;
+		}
+	}
+	return true;
+	// res
+}
