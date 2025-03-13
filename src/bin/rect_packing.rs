@@ -157,33 +157,40 @@ fn rect_packing(height:u32, width:u32) -> nannou::draw::Draw
     //     let y = radius * (TAU * phase).sin();
     //     pt2(x, y)
     // });
-	let mut size = 100.0;
-	let mut vec = vec![];
+	// let mut vec = vec![];
 	let x = 0.0;
 	let y = 0.0;
-	vec.push(pt2(x, y));
-	vec.push(pt2(x, y+size));
-	vec.push(pt2(x+size, y+size));
-	// vec.push(pt2(x+size, y));
-	let poly1 = Polygon::new(&vec, 0);
+	let n_points = 4;
+    let mut radius = 50.0;
+    let points = (0..n_points).map(|i| {
+        let fract = (i as f32 / n_points as f32) + ((i+1)%2) as f32 * 0.1;
+        let phase = fract + 0.25;//the added value can be the random rotation value(only problem is if want a "normal" starting position for later calculation)
+        let x = radius * (TAU * phase).cos();
+        let y = radius * (TAU * phase).sin();
+        pt2(x, y)
+    }).collect();
+	let poly1 = Polygon::new(&points, 0);
     canvas.polygon()
         .color(color)
         .stroke(BLACK)
         .stroke_weight(2.0)
         .join_round()
-        .points(vec);
+        .points(points);
 	let mut polygon_list = vec![];
 	polygon_list.push(poly1);
 	for _i in 0..50{
+		let rot = rng.gen_range(0.0..1.0);
 		let color = random_color2();
-		let y = rng.gen_range(0.0..=height as f32 - size) - height as f32/2.0;
-		let x = rng.gen_range(0.0..=width as f32 - size) - width as f32/2.0;
-		let mut vec = vec![];
-		vec.push(pt2(x, y));
-		vec.push(pt2(x, y+size));
-		vec.push(pt2(x+size, y+size));
-		// vec.push(pt2(x+size, y));
-		let poly = Polygon::new(&vec, _i);
+		let y_p = rng.gen_range(radius..=height as f32 - radius) - height as f32/2.0;
+		let x_p = rng.gen_range(radius..=width as f32 - radius) - width as f32/2.0;
+		let points = (0..n_points).map(|i| {
+			let fract = (i as f32 / n_points as f32) + ((i+1)%2) as f32 * 0.1;
+			let phase = fract + rot;//the added value can be the random rotation value(only problem is if want a "normal" starting position for later calculation)
+			let x = radius * (TAU * phase).cos() + x_p;
+			let y = radius * (TAU * phase).sin() + y_p;
+			pt2(x, y)
+		}).collect();
+		let poly = Polygon::new(&points, _i);
 		if !new_poly_collision(&poly, &polygon_list)
 		{
 			polygon_list.push(poly);
@@ -192,20 +199,23 @@ fn rect_packing(height:u32, width:u32) -> nannou::draw::Draw
 				.stroke(BLACK)
 				.stroke_weight(2.0)
 				.join_round()
-				.points(vec);
+				.points(points);
 		}
 	}
-	size = 30.0;
+	radius = 15.0;
 	for _i in 0..8000{
+		let rot = rng.gen_range(0.0..1.0);
 		let color = random_color2();
-		let y = rng.gen_range(0.0..=height as f32 - size) - height as f32/2.0;
-		let x = rng.gen_range(0.0..=width as f32 - size) - width as f32/2.0;
-		let mut vec = vec![];
-		vec.push(pt2(x, y));
-		vec.push(pt2(x, y+size));
-		vec.push(pt2(x+size, y+size));
-		// vec.push(pt2(x+size, y));
-		let poly = Polygon::new(&vec, _i);
+		let y_p = rng.gen_range(radius..=height as f32 - radius) - height as f32/2.0;
+		let x_p = rng.gen_range(radius..=width as f32 - radius) - width as f32/2.0;
+		let points = (0..n_points).map(|i| {
+			let fract = (i as f32 / n_points as f32) + ((i+1)%2) as f32 * 0.1;
+			let phase = fract + rot;//the added value can be the random rotation value(only problem is if want a "normal" starting position for later calculation)
+			let x = radius * (TAU * phase).cos() + x_p;
+			let y = radius * (TAU * phase).sin() + y_p;
+			pt2(x, y)
+		}).collect();
+		let poly = Polygon::new(&points, _i);
 		if !new_poly_collision(&poly, &polygon_list)
 		{
 			polygon_list.push(poly);
@@ -214,20 +224,23 @@ fn rect_packing(height:u32, width:u32) -> nannou::draw::Draw
 				.stroke(BLACK)
 				.stroke_weight(2.0)
 				.join_round()
-				.points(vec);
+				.points(points);
 		}
 	}
-	size = 10.0;
+	radius = 5.0;
 	for _i in 0..7000{
+		let rot = rng.gen_range(0.0..1.0);
 		let color = random_color2();
-		let y = rng.gen_range(0.0..=height as f32 - size) - height as f32/2.0;
-		let x = rng.gen_range(0.0..=width as f32 -size) - width as f32/2.0;
-		let mut vec = vec![];
-		vec.push(pt2(x, y));
-		vec.push(pt2(x, y+size));
-		vec.push(pt2(x+size, y+size));
-		// vec.push(pt2(x+size, y));
-		let poly = Polygon::new(&vec, _i);
+		let y_p = rng.gen_range(radius..=height as f32 - radius) - height as f32/2.0;
+		let x_p = rng.gen_range(radius..=width as f32 - radius) - width as f32/2.0;
+		let points = (0..n_points).map(|i| {
+			let fract = (i as f32 / n_points as f32) + ((i+1)%2) as f32 * 0.1;
+			let phase = fract + rot;//the added value can be the random rotation value(only problem is if want a "normal" starting position for later calculation)
+			let x = radius * (TAU * phase).cos() + x_p;
+			let y = radius * (TAU * phase).sin() + y_p;
+			pt2(x, y)
+		}).collect();
+		let poly = Polygon::new(&points, _i);
 		if !new_poly_collision(&poly, &polygon_list)
 		{
 			polygon_list.push(poly);
@@ -236,7 +249,7 @@ fn rect_packing(height:u32, width:u32) -> nannou::draw::Draw
 				.stroke(BLACK)
 				.stroke_weight(2.0)
 				.join_round()
-				.points(vec);
+				.points(points);
 		}
 	}
 	eprintln!("there are {} polygons", polygon_list.len());
