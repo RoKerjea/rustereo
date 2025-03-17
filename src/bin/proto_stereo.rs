@@ -14,19 +14,25 @@ pub fn main()
 {
 	const MAXWIDTH : usize = 1920;
 	let xdpi = 75; //x resolution of picture to be created
+	let ydpi = 75;
+	let y_shift = ydpi/16;
+	let mut last_linked:i32;
 
 	let width=800;//width of target pic
 	let height=600;//height of target pic
 
 	let mut look_l = [0;MAXWIDTH];//table of corresponding pixel from right  to left
 	let mut look_r = [0;MAXWIDTH];
-	let mut vis:bool = true;
+	let mut vis:bool;
 	let mut color_t = vec![image::Rgba([255, 0, 0, 255]); MAXWIDTH];//store colors of those pixels, for lookup later when 2 pixels are linked
 	let obj_dist = xdpi * 12;
-	let eye_sep = (xdpi as f32 * 2.5) as u32;
+	let eye_sep = 200;
 	let max_depth = obj_dist as f32;
+	let max_sep = 100;
+	// eprintln!("max_sep = {}", max_sep);
 	let min_depth = (0.55 * max_depth*obj_dist as f32)/((1.0-0.55) * max_depth + obj_dist as f32);
 	let depth_map = image::open("assets/box.jpg").unwrap();
+	let pattern = image::open("assets/images/rect.png").unwrap();
 	let mut canvas = image::ImageBuffer::new(width as u32, height as u32);
 
 	for y in 0..height {
@@ -64,11 +70,18 @@ pub fn main()
 				}
 			}
 		}
+		last_linked = -10;
 		for x in 0..width {//assign propoer color to pixels in current line
 			if look_l[x] == x {
-				color_t[x] = random_dot();//only for random dot image
+				if last_linked == x as i32 -1 {
+					color_t[x] = color_t[x -1];
+				} else {
+					color_t[x] = pattern.get_pixel((x%100) as u32, y as u32);
+				}
+				// color_t[x] = random_dot();//only for random dot image
 			} else {
-				color_t[x] = color_t[look_l[x]]//pixel is linked with another one, so it take the same color
+				color_t[x] = color_t[look_l[x]];//pixel is linked with another one, so it take the same color
+				last_linked = x as i32;
 			}
 		}
 		for x in 0..width {//set pixel in current picture
