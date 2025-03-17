@@ -19,6 +19,8 @@ pub fn main()
 	let height=600;//height of target pic
 
 	let mut look_l = [0;MAXWIDTH];//table of corresponding pixel from right  to left
+	let mut look_r = [0;MAXWIDTH];
+	let mut vis:bool = true;
 	let mut color_t = vec![image::Rgba([255, 0, 0, 255]); MAXWIDTH];//store colors of those pixels, for lookup later when 2 pixels are linked
 	let obj_dist = xdpi * 12;
 	let eye_sep = (xdpi as f32 * 2.5) as u32;
@@ -29,7 +31,7 @@ pub fn main()
 
 	for y in 0..height {
 		for x in 0..width {//link all pixels with itself at first
-			look_l[x] = x;
+			look_l[x] = x; look_r[x] = x;
 		}
 		for x in 0..width {//link all pixels that are parts of the stereogram effect in pairs
 			let object_z =(max_depth - get_z_value(x, y, &depth_map) as f32*(max_depth-min_depth)/256.0) as u32;//get the z depth of selected pixel in depth map reference picture
@@ -37,8 +39,29 @@ pub fn main()
 			let sep = ((eye_sep * object_z) / (object_z + obj_dist))as usize;
 			let left : i32 = x as i32 -sep as i32/2;
 			let right = left + sep as i32;
+			vis = true;
 			if left >= 0 && right < width  as i32{
-				look_l[right as usize] = left as usize;
+				if look_l[right as usize] != right as usize{
+					if look_l[right as usize] < left as usize {
+						look_r[look_l[right as usize]] = look_l[right as usize];
+						look_l[right as usize] = right as usize;
+					}
+					else {
+						vis = false;
+					}
+				}
+				if look_r[left as usize] != left  as usize{
+					if look_r[left as usize] > right  as usize{
+						look_l[look_r[left as usize]] = look_r[left as usize];
+						look_r[left as usize] = left as usize;
+					} else {
+						vis = false;
+					}
+				}
+				if vis == true {
+					look_l[right as usize] = left as usize;
+					look_r[left as usize] = right as usize;
+				}
 			}
 		}
 		for x in 0..width {//assign propoer color to pixels in current line
