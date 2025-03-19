@@ -23,51 +23,37 @@ fn model(app: &App) -> Model {
 // Draw the state of your `Model` into the given `Frame` here.
 fn view(app: &App, model: &Model, frame: Frame) {
     frame.clear(DIMGRAY);
-    let window = app.window(model.window_id).unwrap();
-    let win_rect = window.rect();
     let draw = app.draw();
 
-    // We'll make a wave from an ellipse with a wave added onto its circumference.
-    let resolution = win_rect.right().floor();
-    let rect = geom::Rect::from_wh(vec2(1.0, 1.0));
-    let ellipse = geom::Ellipse::new(rect, resolution).circumference();
-
-    // The wave's frequency and amplitude are derived from the mouse position.
-    let freq = map_range(app.mouse.x, win_rect.left(), win_rect.right(), 1.0, 20.0);
-    let amp = map_range(app.mouse.y, win_rect.bottom(), win_rect.top(), 0.0, 0.5);
-    let wave = (0..resolution as usize).map(|i| {
-        let phase = i as f32 / resolution;
-        (phase * freq * PI * 2.0).sin() * amp
-    });
-
-	let n_points = 5;
+	let n_points = 4;
     let radius = 200.0;
     let points = (0..n_points).map(|i| {
-        let fract = (i as f32 / n_points as f32);
-        let phase = fract;//the added value can be the random rotation value(only problem is if want a "normal" starting position for later calculation)
+        let fract = (i as f32 / n_points as f32) + ((i+1)%2) as f32 * 0.1;
+        let phase = fract +0.075 ;//the added value can be the random rotation value(only problem is if want a "normal" starting position for later calculation)
         let x = radius * (TAU * phase).cos();
         let y = radius * (TAU * phase).sin();
         let point = pt2(x, y);
         let tex_coords = [point.x/1280.0 + 0.5, 1.0 - (point.y/640.0 + 0.5)];
         (point, tex_coords)
     });
-    // Combine the ellipse with the wave.
-    // let points = ellipse.zip(wave).map(|(point, wave)| {
-    //     // Base the tex coords on the non-wavey points.
-    //     // This will make the texture look wavey.
-    //     let point = Point2::from(point);
-    //     let tex_coords = [point.x + 0.5, 1.0 - (point.y + 0.5)];
-    //     // Apply the wave to the points.
-    //     let point = point + point * wave;
-    //     (point, tex_coords)
-    // });
-	// let area = geom::Polygon::new(points);//doesn't work for what i want to do, but interesting to note
+	//need to create a double of the point structure to rewrite the polygon outline on top of it's texture
+    let points2 = (0..n_points).map(|i| {
+        let fract = (i as f32 / n_points as f32) + ((i+1)%2) as f32 * 0.1;
+        let phase = fract +0.075 ;//the added value can be the random rotation value(only problem is if want a "normal" starting position for later calculation)
+        let x = radius * (TAU * phase).cos();
+        let y = radius * (TAU * phase).sin();
+        let point = pt2(x, y);
+        point
+    });
 
-    // Scale the points up to half the window size.
-    let ellipse_side = win_rect.w().min(win_rect.h()) * 0.75;
 	draw.polygon()
 		.points_textured(&model.texture, points);
 
+	draw.polygon()
+		.no_fill()
+		.stroke(BLACK)
+		.stroke_weight(2.0)
+		.points(points2);
     // Draw to the frame!
     draw.to_frame(app, &frame).unwrap();
 }
