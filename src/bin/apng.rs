@@ -5,7 +5,7 @@ use std::path::Path;
 
 fn main() {
     let mut files = vec![];
-	for i in 0..99 {
+	for i in 0..=100 {
 
 		let path = format!("frames/proto_stereo_{}.png", i);
 		files.push(path);
@@ -16,7 +16,7 @@ fn main() {
         png_images.push(apng::load_png(f).unwrap());
     }
 
-    let path = Path::new(r"frames/out.png");
+    let path = Path::new(r"out.png");
     let mut out = BufWriter::new(File::create(path).unwrap());
 
     let config = apng::create_config(&png_images, None).unwrap();

@@ -33,60 +33,62 @@ pub fn main()
 	let depth_map = image::open("assets/box.jpg").unwrap();
 	let pattern = image::open("assets/images/rect.png").unwrap();
 	let mut canvas = image::ImageBuffer::new(width as u32, height as u32);
+	for frame in 0..=100 {
+		for y in 0..height {
+			for x in 0..width {//link all pixels with itself at first
+				look_l[x] = x; look_r[x] = x;
+			}
+			for x in 0..width {//link all pixels that are parts of the stereogram effect in pairs
+				let object_z =(max_depth - get_z_value(x, y, &depth_map) as f32*(max_depth-min_depth)/256.0) as u32;//get the z depth of selected pixel in depth map reference picture
 
-	for y in 0..height {
-		for x in 0..width {//link all pixels with itself at first
-			look_l[x] = x; look_r[x] = x;
-		}
-		for x in 0..width {//link all pixels that are parts of the stereogram effect in pairs
-			let object_z =(max_depth - get_z_value(x, y, &depth_map) as f32*(max_depth-min_depth)/256.0) as u32;//get the z depth of selected pixel in depth map reference picture
-
-			let sep = ((eye_sep * object_z) / (object_z + obs_dist))as usize;
-			let left : i32 = x as i32 -sep as i32/2;
-			let right = left + sep as i32;
-			vis = true;
-			if left >= 0 && right < width  as i32{
-				if look_l[right as usize] != right as usize{
-					if look_l[right as usize] < left as usize {
-						look_r[look_l[right as usize]] = look_l[right as usize];
-						look_l[right as usize] = right as usize;
+				let sep = ((eye_sep * object_z) / (object_z + obs_dist))as usize;
+				let left : i32 = x as i32 -sep as i32/2;
+				let right = left + sep as i32;
+				vis = true;
+				if left >= 0 && right < width  as i32{
+					if look_l[right as usize] != right as usize{
+						if look_l[right as usize] < left as usize {
+							look_r[look_l[right as usize]] = look_l[right as usize];
+							look_l[right as usize] = right as usize;
+						}
+						else {
+							vis = false;
+						}
 					}
-					else {
-						vis = false;
+					if look_r[left as usize] != left  as usize{
+						if look_r[left as usize] > right  as usize{
+							look_l[look_r[left as usize]] = look_r[left as usize];
+							look_r[left as usize] = left as usize;
+						} else {
+							vis = false;
+						}
+					}
+					if vis == true {
+						look_l[right as usize] = left as usize;
+						look_r[left as usize] = right as usize;
 					}
 				}
-				if look_r[left as usize] != left  as usize{
-					if look_r[left as usize] > right  as usize{
-						look_l[look_r[left as usize]] = look_r[left as usize];
-						look_r[left as usize] = left as usize;
+			}
+			last_linked = -10;
+			for x in 0..width {//assign propoer color to pixels in current line
+				if look_l[x] == x {
+					if last_linked == x as i32 -1 {
+						color_t[x] = color_t[x -1];
 					} else {
-						vis = false;
+						color_t[x] = pattern.get_pixel(((x + frame)%100) as u32, y as u32);//get new pixel in the pattern
 					}
-				}
-				if vis == true {
-					look_l[right as usize] = left as usize;
-					look_r[left as usize] = right as usize;
-				}
-			}
-		}
-		last_linked = -10;
-		for x in 0..width {//assign propoer color to pixels in current line
-			if look_l[x] == x {
-				if last_linked == x as i32 -1 {
-					color_t[x] = color_t[x -1];
 				} else {
-					color_t[x] = pattern.get_pixel((x%100) as u32, y as u32);//get new pixel in the pattern
+					color_t[x] = color_t[look_l[x]];//pixel is linked with another one, so it take the same color
+					last_linked = x as i32;
 				}
-			} else {
-				color_t[x] = color_t[look_l[x]];//pixel is linked with another one, so it take the same color
-				last_linked = x as i32;
+			}
+			for x in 0..width {//set pixel in current picture
+				canvas.put_pixel(x as u32, y as u32, color_t[x]);
 			}
 		}
-		for x in 0..width {//set pixel in current picture
-			canvas.put_pixel(x as u32, y as u32, color_t[x]);
-		}
+		let path = format!("frames/proto_stereo_{}.png", frame);
+		image::save_buffer(path, &canvas, width as u32, height as u32, image::ExtendedColorType::Rgba8).unwrap();
 	}
-	image::save_buffer("proto_stereo.png", &canvas, width as u32, height as u32, image::ExtendedColorType::Rgba8).unwrap();
 }
 
 /*function to get depth value from a depthmap pic
